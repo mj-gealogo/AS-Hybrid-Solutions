@@ -1,5 +1,18 @@
 {
-  "chipCats": ["Lights","Batteries","ABS Pumps","Engine","Gearbox"],
-  "homeCats": ["Lights","Batteries","ABS Pumps","Engine","Gearbox","Suspension"],
-  "conditionFilter": true
+  "chipCats": [
+    "Lights",
+    "Batteries",
+    "ABS Pumps",
+    "Engine",
+    "Gearbox"
+  ],
+  "homeCats": [
+    "Lights",
+    "Batteries",
+    "ABS Pumps",
+    "Engine",
+    "Gearbox",
+    "Suspension"
+  ],
+  "conditionFilter": false
 }
