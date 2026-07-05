@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&amp;family=Barlow:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff}
+  ::selection{background:#FD843B;color:#fff}
+  .as-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+  .as-hero-grid{display:grid;grid-template-columns:1.22fr 1.2fr .5fr;gap:36px;align-items:start}
+  .as-prod-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+  .as-2col{display:grid;grid-template-columns:1.4fr 1fr;gap:36px;align-items:start}
+  .as-foot{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.2fr;gap:36px}
+  .as-cat-grid{display:grid;grid-template-columns:248px 1fr;gap:34px;align-items:start}
+  .as-filter-side{position:sticky;top:82px}
+  .as-filter-toggle{display:none}
+  input,textarea,select{font-family:Barlow,system-ui}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:#FD843B}
+  @media(max-width:900px){.as-prod-grid,.as-2col,.as-foot{grid-template-columns:1fr;gap:32px}.as-cat-grid{grid-template-columns:1fr;gap:18px}.as-filter-side{position:static;display:none;border:1px solid #eef1f3;border-radius:14px;padding:18px}.as-filter-side.is-open{display:block}.as-filter-toggle{display:inline-flex !important}}
+  @media(max-width:1080px){.as-hero-grid{grid-template-columns:1fr;gap:34px}.as-hero-contact{align-items:flex-start !important;text-align:left !important}}
+  @media(max-width:640px){.as-nav{flex-wrap:wrap;row-gap:12px}.as-navlinks{gap:16px !important;font-size:13px !important;flex-wrap:wrap;justify-content:flex-end;row-gap:10px}.as-hidexs{display:none !important}.as-pad{padding-left:6vw !important;padding-right:6vw !important}}
+</style>
+</helmet>
+
+<div style="font-family:Barlow,system-ui;color:#374754;background:#fff;min-height:100vh">
+
+  <!-- ============ NAV ============ -->
+  <div class="as-nav as-pad" style="position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 5vw;border-bottom:1px solid #eef1f3;background:rgba(255,255,255,.94);backdrop-filter:blur(8px)">
+    <div onClick="{{ goHome }}" style="display:flex;align-items:center;gap:11px;cursor:pointer">
+      <div style="width:34px;height:38px;background:#374754;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border-left:3px solid #FD843B"></div>
+      <div style="line-height:1"><div style="font:800 16px Archivo;color:#374754;letter-spacing:-.01em">A&amp;S</div><div style="font:600 8px Barlow;letter-spacing:.22em;color:#FD843B;margin-top:2px">AUTO PARTS</div></div>
+    </div>
+    <div class="as-navlinks" style="display:flex;align-items:center;gap:26px;font:500 14px Barlow">
+      <span onClick="{{ goHome }}" style="cursor:pointer;color:{{ navHomeColor }}">Home</span>
+      <span onClick="{{ goCatalog }}" style="cursor:pointer;color:{{ navCatalogColor }}">Catalog</span>
+      <span onClick="{{ goContact }}" style="cursor:pointer;color:{{ navContactColor }}">Contact</span>
+      <span onClick="{{ goAdmin }}" class="as-hidexs" style="cursor:pointer;color:#9aa6ae;font-size:12.5px;display:flex;align-items:center;gap:5px">● Admin</span>
+      <span onClick="{{ goContact }}" style="background:#FD843B;color:#fff;padding:10px 18px;border-radius:7px;font-weight:600;cursor:pointer;white-space:nowrap">Request a quote</span>
+    </div>
+  </div>
+
+  <!-- ============ HOME ============ -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div>
+    <!-- hero -->
+    <div class="as-pad" style="padding:56px 5vw 44px">
+      <div class="as-hero-grid">
+        <div>
+          <div style="font:600 12px Barlow;letter-spacing:.18em;color:#FD843B;margin-bottom:16px">GENUINE &amp; QUALITY AFTERMARKET</div>
+          <div style="font:800 clamp(38px,5vw,56px)/1.04 Archivo;color:#374754;letter-spacing:-.02em">The right part,<br>the first time.</div>
+          <p style="font:400 17px/1.6 Barlow;color:#5c6770;margin:18px 0 26px;max-width:480px">Lights, batteries, ABS pumps, engines, gearboxes and suspension — checked, sorted and ready to dispatch. Find your part, then send it over for a fast price.</p>
+          <div style="display:flex;gap:10px;max-width:500px">
+            <input value="{{ searchQuery }}" onInput="{{ onSearch }}" onKeyDown="{{ heroKey }}" placeholder="Search by part name or description…" style="flex:1;border:1.5px solid #d8dee3;border-radius:9px;padding:0 16px;height:52px;font:400 15px Barlow;color:#374754">
+            <div onClick="{{ doHeroSearch }}" style="background:#374754;color:#fff;padding:0 24px;height:52px;display:flex;align-items:center;border-radius:9px;font-weight:600;font-size:15px;cursor:pointer">Search</div>
+          </div>
+          <div style="display:flex;gap:26px;margin-top:22px;font:500 14px Barlow;color:#5c6770">
+            <span>✓ Trusted</span><span>✓ Expert support</span>
+          </div>
+          <div onClick="{{ goContact }}" style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;background:#FD843B;color:#fff;padding:13px 24px;border-radius:9px;font:600 15px Barlow;cursor:pointer">Contact us now to order →</div>
+        </div>
+
+        <!-- middle: shop by category (hidden on phones) -->
+        <div class="as-hidexs" style="background:#f7f9fa;border:1px solid #eef1f3;border-radius:16px;padding:18px">
+          <div style="font:700 15px Archivo;color:#374754;margin:2px 4px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px">Shop by category <span style="font:500 12px Barlow;color:#9aa6ae">{{ totalProducts }} parts</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <sc-for list="{{ homeCats }}" as="c" hint-placeholder-count="7">
+              <div onClick="{{ c.onClick }}" style="{{ c.style }}"><span>{{ c.name }}</span><span style="font:600 12px Barlow;opacity:.7">{{ c.count }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- right: call or email, top-right -->
+        <div class="as-hero-contact" style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;text-align:right">
+          <div style="font:600 11px Barlow;letter-spacing:.14em;text-transform:uppercase;color:#9aa6ae">Call or email to order</div>
+          <a href="tel:01234567890" style="text-decoration:none;font:800 22px Archivo;color:#374754;letter-spacing:-.01em">0123 456 7890</a>
+          <a href="mailto:parts@asautoparts.co.uk" style="text-decoration:none;font:600 14px Barlow;color:#FD843B">parts@asautoparts.co.uk</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- paginated products -->
+    <div class="as-pad" data-scroll="browse" style="padding:18px 5vw 64px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:22px;gap:16px;flex-wrap:wrap">
+        <div>
+          <div style="font:800 28px Archivo;color:#374754;letter-spacing:-.01em">Browse our parts</div>
+          <div style="font:400 15px Barlow;color:#6b7780;margin-top:4px">Showing {{ activeCategoryLabel }} · {{ homeCount }} results</div>
+        </div>
+        <span onClick="{{ goCatalog }}" style="font:600 14px Barlow;color:#FD843B;cursor:pointer">Open full catalog →</span>
+      </div>
+      <div class="as-cards">
+        <sc-for list="{{ homeProducts }}" as="p" hint-placeholder-count="6">
+          <div onClick="{{ p.onOpen }}" style="border:1px solid #eef1f3;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;display:flex;flex-direction:column" style-hover="border-color:#FD843B;box-shadow:0 8px 24px rgba(55,71,84,.08)">
+            <div style="position:relative;height:172px;background:repeating-linear-gradient(135deg,#eef1f3 0 12px,#e7ebee 12px 24px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 11px ui-monospace,monospace;letter-spacing:.05em">
+              {{ p.imgEl }}
+              <sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}">{{ p.thumb }}</sc-if>
+            </div>
+            <div style="padding:15px 17px;display:flex;flex-direction:column;gap:9px;flex:1">
+              <div style="display:flex;gap:7px;align-items:center">
+                <span style="background:#eef1f3;color:#374754;font:600 11px Barlow;padding:3px 9px;border-radius:20px">{{ p.category }}</span>
+                <span style="color:#FD843B;font:600 11px Barlow">{{ p.condition }}</span>
+              </div>
+              <div style="font:700 16px Archivo;color:#374754;line-height:1.25">{{ p.name }}</div>
+              <div style="font:400 13.5px/1.5 Barlow;color:#6b7780">{{ p.shortDesc }}</div>
+              <div style="margin-top:auto;font:600 13px Barlow;color:#374754">View details →</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <!-- pager -->
+      <sc-if value="{{ homeShowPager }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:34px">
+          <div onClick="{{ homePages.onPrev }}" style="{{ homePages.prevStyle }}">←</div>
+          <sc-for list="{{ homePages.items }}" as="pg" hint-placeholder-count="3">
+            <div onClick="{{ pg.onClick }}" style="{{ pg.style }}">{{ pg.n }}</div>
+          </sc-for>
+          <div onClick="{{ homePages.onNext }}" style="{{ homePages.nextStyle }}">→</div>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- contact band -->
+    <div class="as-pad" style="padding:0 5vw 64px">
+      <div style="background:#374754;border-radius:18px;padding:42px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap">
+        <div><div style="font:800 28px Archivo;color:#fff;letter-spacing:-.01em">Can't find your part?</div><div style="font:400 15px Barlow;color:#aeb8bf;margin-top:8px;max-width:480px">Flick us a call — we'll check if we can source it for you and get a price back to you fast.</div></div>
+        <div onClick="{{ goContact }}" style="background:#FD843B;color:#fff;padding:15px 28px;border-radius:9px;font:600 16px Barlow;cursor:pointer;white-space:nowrap">Contact us</div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ CATALOG ============ -->
+  <sc-if value="{{ isCatalog }}" hint-placeholder-val="{{ false }}">
+  <div class="as-pad" style="padding:44px 5vw 64px">
+    <div style="font:800 34px Archivo;color:#374754;letter-spacing:-.02em">Catalog</div>
+    <div style="font:400 15px Barlow;color:#6b7780;margin-top:6px">{{ catCount }} parts · {{ activeCategoryLabel }}</div>
+
+    <!-- search -->
+    <div style="display:flex;align-items:center;gap:12px;margin:26px 0 16px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:260px;border:1.5px solid #d8dee3;border-radius:10px;padding:0 14px;height:50px">
+        <span style="color:#9aa6ae;font-size:15px">⌕</span>
+        <input value="{{ searchQuery }}" onInput="{{ onSearch }}" placeholder="Search by part name or description…" style="flex:1;border:none;height:48px;font:400 15px Barlow;color:#374754;background:transparent">
+      </div>
+    </div>
+    <!-- quick chips + mobile filters toggle -->
+    <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:26px">
+      <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6">
+        <div onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.name }}</div>
+      </sc-for>
+      <div class="as-filter-toggle" onClick="{{ toggleFilters }}" style="align-items:center;gap:7px;padding:9px 16px;border-radius:30px;border:1.5px solid #374754;color:#374754;font:600 13px Barlow;cursor:pointer">⚙ Filters {{ activeFilterBadge }}</div>
+    </div>
+
+    <div class="as-cat-grid">
+      <!-- FILTERS SIDEBAR -->
+      <aside class="as-filter-side {{ filterSideClass }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font:800 17px Archivo;color:#374754;letter-spacing:-.01em">Filters</div>
+          <span onClick="{{ clearFilters }}" style="font:600 12px Barlow;color:{{ clearColor }};cursor:pointer">Clear all</span>
+        </div>
+
+        <div style="border-top:1px solid #eef1f3;padding-top:16px">
+          <div onClick="{{ toggleCatFacet }}" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:10px">
+            <span style="font:600 11px Barlow;letter-spacing:.12em;text-transform:uppercase;color:#9aa6ae">Category</span>
+            <span style="font-size:11px;color:#9aa6ae">{{ catChevron }}</span>
+          </div>
+          <sc-if value="{{ catFacetOpen }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <sc-for list="{{ sidebarCats }}" as="c" hint-placeholder-count="7">
+              <div onClick="{{ c.onClick }}" style="{{ c.style }}"><span>{{ c.name }}</span><span style="font:600 12px Barlow;opacity:.65">{{ c.count }}</span></div>
+            </sc-for>
+          </div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ showConditionFilter }}" hint-placeholder-val="{{ true }}">
+        <div style="border-top:1px solid #eef1f3;padding-top:16px;margin-top:18px">
+          <div onClick="{{ toggleCondFacet }}" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:8px">
+            <span style="font:600 11px Barlow;letter-spacing:.12em;text-transform:uppercase;color:#9aa6ae">Condition</span>
+            <span style="font-size:11px;color:#9aa6ae">{{ condChevron }}</span>
+          </div>
+          <sc-if value="{{ condFacetOpen }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <sc-for list="{{ sidebarConds }}" as="c" hint-placeholder-count="4">
+              <div onClick="{{ c.onToggle }}" style="display:flex;align-items:center;gap:10px;padding:7px 4px;cursor:pointer;border-radius:8px">
+                <div style="{{ c.boxStyle }}">{{ c.tick }}</div>
+                <span style="flex:1;font:500 14px Barlow;color:#374754">{{ c.name }}</span>
+                <span style="font:600 12px Barlow;color:#9aa6ae">{{ c.count }}</span>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+        </div>
+        </sc-if>
+      </aside>
+
+      <!-- RESULTS -->
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;min-height:30px">
+          <span style="font:600 14px Barlow;color:#6b7780">{{ catCount }} results</span>
+          <sc-for list="{{ activeFilterTags }}" as="t" hint-placeholder-count="0">
+            <span onClick="{{ t.onRemove }}" style="display:inline-flex;align-items:center;gap:6px;background:#374754;color:#fff;font:600 12px Barlow;padding:5px 12px;border-radius:20px;cursor:pointer">{{ t.label }} <span style="opacity:.7;font-size:13px">×</span></span>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ catEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:70px 20px;border:1px dashed #d8dee3;border-radius:14px;color:#6b7780">
+            <div style="font:700 20px Archivo;color:#374754">No parts match your filters</div>
+            <div style="font:400 15px Barlow;margin-top:8px">Try clearing a filter, or <span onClick="{{ goContact }}" style="color:#FD843B;cursor:pointer;font-weight:600">ask us to source it</span>.</div>
+          </div>
+        </sc-if>
+
+        <div class="as-cards">
+          <sc-for list="{{ catProducts }}" as="p" hint-placeholder-count="6">
+            <div onClick="{{ p.onOpen }}" style="border:1px solid #eef1f3;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;display:flex;flex-direction:column" style-hover="border-color:#FD843B;box-shadow:0 8px 24px rgba(55,71,84,.08)">
+              <div style="position:relative;height:172px;background:repeating-linear-gradient(135deg,#eef1f3 0 12px,#e7ebee 12px 24px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 11px ui-monospace,monospace;letter-spacing:.05em">
+                {{ p.imgEl }}
+                <sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}">{{ p.thumb }}</sc-if>
+              </div>
+              <div style="padding:15px 17px;display:flex;flex-direction:column;gap:9px;flex:1">
+                <div style="display:flex;gap:7px;align-items:center">
+                  <span style="background:#eef1f3;color:#374754;font:600 11px Barlow;padding:3px 9px;border-radius:20px">{{ p.category }}</span>
+                  <span style="color:#FD843B;font:600 11px Barlow">{{ p.condition }}</span>
+                </div>
+                <div style="font:700 16px Archivo;color:#374754;line-height:1.25">{{ p.name }}</div>
+                <div style="font:400 13.5px/1.5 Barlow;color:#6b7780">{{ p.shortDesc }}</div>
+                <div style="margin-top:auto;font:600 13px Barlow;color:#374754">View details →</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ catShowPager }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:36px">
+            <div onClick="{{ catPages.onPrev }}" style="{{ catPages.prevStyle }}">←</div>
+            <sc-for list="{{ catPages.items }}" as="pg" hint-placeholder-count="2">
+              <div onClick="{{ pg.onClick }}" style="{{ pg.style }}">{{ pg.n }}</div>
+            </sc-for>
+            <div onClick="{{ catPages.onNext }}" style="{{ catPages.nextStyle }}">→</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ PRODUCT DETAIL ============ -->
+  <sc-if value="{{ isProduct }}" hint-placeholder-val="{{ false }}">
+  <div class="as-pad" style="padding:28px 5vw 64px">
+    <div style="font:500 13px Barlow;color:#6b7780;margin-bottom:24px"><span onClick="{{ goCatalog }}" style="cursor:pointer">Catalog</span> <span style="color:#c2cad0">/</span> <span style="color:#374754">{{ product.category }}</span> <span style="color:#c2cad0">/</span> <span style="color:#374754">{{ product.name }}</span></div>
+
+    <div class="as-prod-grid">
+      <!-- gallery / carousel -->
+      <div>
+        <div style="position:relative;height:420px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#eef1f3 0 16px,#e7ebee 16px 32px)">
+          {{ mainImgEl }}
+          <sc-if value="{{ mainIsPlaceholder }}" hint-placeholder-val="{{ true }}">
+            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 13px ui-monospace,monospace;letter-spacing:.06em">{{ mainLabel }}</div>
+          </sc-if>
+          <sc-if value="{{ showCarousel }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ galPrev }}" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);color:#374754;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12)">‹</div>
+            <div onClick="{{ galNext }}" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);color:#374754;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12)">›</div>
+            <div style="position:absolute;bottom:14px;left:0;right:0;display:flex;gap:7px;justify-content:center">
+              <sc-for list="{{ dots }}" as="d" hint-placeholder-count="3"><div onClick="{{ d.onClick }}" style="{{ d.style }}"></div></sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ showCarousel }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px">
+            <sc-for list="{{ galleryItems }}" as="g" hint-placeholder-count="4">
+              <div onClick="{{ g.onClick }}" style="{{ g.style }}">
+                {{ g.thumbEl }}
+                <sc-if value="{{ g.isPlaceholder }}" hint-placeholder-val="{{ true }}">{{ g.label }}</sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+      <!-- info -->
+      <div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+          <span style="background:#eef1f3;color:#374754;font:600 12px Barlow;padding:4px 11px;border-radius:20px">{{ product.category }}</span>
+          <span style="background:#FD843B;color:#fff;font:600 12px Barlow;padding:4px 11px;border-radius:20px">{{ product.condition }}</span>
+        </div>
+        <div style="font:800 32px/1.1 Archivo;color:#374754;letter-spacing:-.02em">{{ product.name }}</div>
+        <div style="font:500 13px Barlow;color:#9aa6ae;margin-top:8px">Part ref: {{ product.sku }}</div>
+        <p style="font:400 16px/1.65 Barlow;color:#5c6770;margin:18px 0 24px">{{ product.shortDesc }}</p>
+
+        <div style="background:#f7f9fa;border:1px solid #eef1f3;border-radius:14px;padding:22px;margin-bottom:22px">
+          <div style="font:600 11px Barlow;letter-spacing:.14em;text-transform:uppercase;color:#9aa6ae;margin-bottom:8px">Call or email to order</div>
+          <a href="tel:01234567890" style="display:block;text-decoration:none;font:800 24px Archivo;color:#374754;letter-spacing:-.01em">0123 456 7890</a>
+          <a href="mailto:parts@asautoparts.co.uk" style="display:inline-block;text-decoration:none;font:600 14px Barlow;color:#FD843B;margin-top:2px">parts@asautoparts.co.uk</a>
+          <div style="height:1px;background:#e3e8eb;margin:18px 0"></div>
+          <div style="font:600 13px Barlow;color:#374754;margin-bottom:4px">Interested in this part?</div>
+          <div style="font:400 14px/1.5 Barlow;color:#6b7780;margin-bottom:16px">Send us your vehicle's make and model and we'll confirm fit, condition and price.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div onClick="{{ goContact }}" style="background:#FD843B;color:#fff;padding:13px 24px;border-radius:9px;font:600 15px Barlow;cursor:pointer">Request a quote</div>
+            <div onClick="{{ goContact }}" style="border:1.5px solid #d8dee3;color:#374754;padding:13px 24px;border-radius:9px;font:600 15px Barlow;cursor:pointer">Ask a question</div>
+          </div>
+        </div>
+
+        <!-- specs (hidden when none) -->
+        <sc-if value="{{ hasSpecs }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="font:700 16px Archivo;color:#374754;margin:6px 0 10px">Specifications</div>
+          <div style="border:1px solid #eef1f3;border-radius:12px;overflow:hidden">
+            <sc-for list="{{ product.specsList }}" as="s" hint-placeholder-count="4">
+              <div style="display:flex;justify-content:space-between;gap:16px;padding:12px 16px;border-bottom:1px solid #f1f4f6;font:400 14px Barlow"><span style="color:#6b7780">{{ s.label }}</span><span style="color:#374754;font-weight:600;text-align:right">{{ s.value }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <!-- description -->
+    <div style="margin-top:44px;max-width:760px">
+      <div style="font:700 20px Archivo;color:#374754;margin-bottom:12px">Description</div>
+      <p style="font:400 16px/1.7 Barlow;color:#5c6770;white-space:pre-line">{{ product.description }}</p>
+    </div>
+
+    <!-- related -->
+    <sc-if value="{{ hasRelated }}" hint-placeholder-val="{{ true }}">
+    <div style="margin-top:56px">
+      <div style="font:800 24px Archivo;color:#374754;letter-spacing:-.01em;margin-bottom:20px">More in {{ product.category }}</div>
+      <div class="as-cards">
+        <sc-for list="{{ related }}" as="p" hint-placeholder-count="3">
+          <div onClick="{{ p.onOpen }}" style="border:1px solid #eef1f3;border-radius:14px;overflow:hidden;cursor:pointer;background:#fff;display:flex;flex-direction:column" style-hover="border-color:#FD843B;box-shadow:0 8px 24px rgba(55,71,84,.08)">
+            <div style="position:relative;height:150px;background:repeating-linear-gradient(135deg,#eef1f3 0 12px,#e7ebee 12px 24px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 11px ui-monospace,monospace">
+              {{ p.imgEl }}
+              <sc-if value="{{ p.noImg }}" hint-placeholder-val="{{ true }}">{{ p.thumb }}</sc-if>
+            </div>
+            <div style="padding:14px 16px"><div style="font:700 15px Archivo;color:#374754">{{ p.name }}</div><div style="font:600 12px Barlow;color:#FD843B;margin-top:6px">View details →</div></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <!-- ============ CONTACT ============ -->
+  <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+  <div class="as-pad" style="padding:48px 5vw 64px">
+    <div style="max-width:560px"><div style="font:800 36px Archivo;color:#374754;letter-spacing:-.02em">Get in touch</div>
+    <p style="font:400 17px/1.6 Barlow;color:#5c6770;margin-top:12px">Tell us the part you need and your vehicle's make and model — we'll confirm fit and send a price. We aim to reply the same working day.</p></div>
+
+    <div class="as-2col" style="margin-top:36px">
+      <!-- form -->
+      <div style="background:#fff;border:1px solid #eef1f3;border-radius:16px;padding:28px">
+        <sc-if value="{{ contactSent }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding:40px 16px">
+            <div style="width:56px;height:56px;border-radius:50%;background:#FD843B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px">✓</div>
+            <div style="font:800 22px Archivo;color:#374754">Enquiry sent</div>
+            <div style="font:400 15px Barlow;color:#6b7780;margin-top:8px">Thanks — we'll be in touch shortly. (Demo: no message is actually sent.)</div>
+            <div onClick="{{ resetContact }}" style="display:inline-block;margin-top:20px;color:#FD843B;font:600 14px Barlow;cursor:pointer">Send another →</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ contactNotSent }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Full name</div><input placeholder="Jane Smith" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754"></div>
+            <div><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Phone</div><input placeholder="07000 000000" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754"></div>
+          </div>
+          <div style="margin-top:14px"><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Email</div><input placeholder="jane@email.com" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+            <div><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Vehicle make &amp; model</div><input placeholder="e.g. VW Golf 2015" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754"></div>
+            <div><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Part needed</div><input placeholder="e.g. ABS pump" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754"></div>
+          </div>
+          <div style="margin-top:14px"><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Message</div><textarea placeholder="Tell us a bit more…" style="width:100%;height:110px;border:1.5px solid #d8dee3;border-radius:9px;padding:11px 13px;font:400 15px Barlow;color:#374754;resize:vertical"></textarea></div>
+          <div onClick="{{ sendContact }}" style="margin-top:18px;background:#FD843B;color:#fff;height:50px;border-radius:9px;display:flex;align-items:center;justify-content:center;font:600 16px Barlow;cursor:pointer">Send enquiry</div>
+          <div style="font:400 12px Barlow;color:#9aa6ae;margin-top:10px;text-align:center">We'll only use your details to answer your enquiry.</div>
+        </div>
+        </sc-if>
+      </div>
+
+      <!-- contact details -->
+      <div>
+        <div style="background:#374754;border-radius:16px;padding:26px;color:#fff">
+          <div style="font:700 17px Archivo;margin-bottom:16px">Contact details</div>
+          <div style="display:flex;flex-direction:column;gap:16px;font:400 15px Barlow">
+            <div><div style="color:#9aa6ae;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">Phone</div>0123 456 7890</div>
+            <div><div style="color:#9aa6ae;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">Email</div>parts@asautoparts.co.uk</div>
+            <div><div style="color:#9aa6ae;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">Address</div>Unit 5, Example Industrial Estate,<br>Townsville, TS1 2AB</div>
+            <div><div style="color:#9aa6ae;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">Opening hours</div>Mon–Fri 8:00–18:00<br>Sat 9:00–16:00 · Sun closed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ ADMIN ============ -->
+  <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+  <div class="as-pad" style="padding:40px 5vw 64px;background:#f7f9fa;min-height:70vh">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px">
+      <div>
+        <div style="font:800 30px Archivo;color:#374754;letter-spacing:-.02em">Product manager</div>
+        <div style="font:400 14px Barlow;color:#6b7780;margin-top:4px">{{ adminCount }} products · changes save to this browser</div>
+      </div>
+      <div onClick="{{ openAdd }}" style="background:#FD843B;color:#fff;padding:12px 22px;border-radius:9px;font:600 15px Barlow;cursor:pointer">+ Add product</div>
+    </div>
+
+    <!-- catalog filter settings -->
+    <div style="background:#fff;border:1px solid #eef1f3;border-radius:14px;padding:22px 24px;margin-top:22px">
+      <div style="font:700 17px Archivo;color:#374754;letter-spacing:-.01em">Catalog filters</div>
+      <div style="font:400 13.5px/1.5 Barlow;color:#6b7780;margin-top:4px;max-width:640px">Choose which categories appear as quick filter chips at the top of the catalog. Every category is always available in the catalog's filter sidebar — these just promote the ones you use most.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;min-height:34px">
+        <sc-for list="{{ chipTags }}" as="t" hint-placeholder-count="4">
+          <span style="display:inline-flex;align-items:center;gap:8px;background:#FD843B;color:#fff;font:600 13px Barlow;padding:6px 7px 6px 14px;border-radius:30px">{{ t.name }} <span onClick="{{ t.onRemove }}" style="cursor:pointer;width:19px;height:19px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1">×</span></span>
+        </sc-for>
+        <sc-if value="{{ chipNoneChosen }}" hint-placeholder-val="{{ false }}">
+          <span style="font:400 13px Barlow;color:#9aa6ae">No quick chips — categories show only in the sidebar.</span>
+        </sc-if>
+      </div>
+      <select value="{{ chipSelectValue }}" onChange="{{ onAddChip }}" style="width:100%;max-width:320px;height:44px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 11px;font:400 14px Barlow;color:#374754;background:#fff;margin-top:12px">
+        <option value="">+ Add a category as a chip…</option>
+        <sc-for list="{{ chipAddOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o }}">{{ o }}</option></sc-for>
+      </select>
+      <div style="border-top:1px solid #eef1f3;margin-top:20px;padding-top:16px">
+        <div onClick="{{ toggleConditionFilter }}" style="display:inline-flex;align-items:center;gap:11px;cursor:pointer">
+          <div style="{{ conditionFilterBoxStyle }}">{{ conditionFilterTick }}</div>
+          <div><div style="font:600 14px Barlow;color:#374754">Show the Condition filter</div><div style="font:400 12.5px Barlow;color:#9aa6ae">Lets shoppers filter the catalog by New, Refurbished, etc.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- home page categories -->
+    <div style="background:#fff;border:1px solid #eef1f3;border-radius:14px;padding:22px 24px;margin-top:16px">
+      <div style="font:700 17px Archivo;color:#374754;letter-spacing:-.01em">Home page categories</div>
+      <div style="font:400 13.5px/1.5 Barlow;color:#6b7780;margin-top:4px;max-width:640px">Choose which categories show in the “Shop by category” panel on the home page. “All parts” always stays at the top.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;min-height:34px">
+        <sc-for list="{{ homeCatTags }}" as="t" hint-placeholder-count="4">
+          <span style="display:inline-flex;align-items:center;gap:8px;background:#374754;color:#fff;font:600 13px Barlow;padding:6px 7px 6px 14px;border-radius:30px">{{ t.name }} <span onClick="{{ t.onRemove }}" style="cursor:pointer;width:19px;height:19px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1">×</span></span>
+        </sc-for>
+        <sc-if value="{{ homeNoneChosen }}" hint-placeholder-val="{{ false }}">
+          <span style="font:400 13px Barlow;color:#9aa6ae">No categories — the home panel will show only “All parts”.</span>
+        </sc-if>
+      </div>
+      <select value="{{ homeSelectValue }}" onChange="{{ onAddHomeCat }}" style="width:100%;max-width:320px;height:44px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 11px;font:400 14px Barlow;color:#374754;background:#fff;margin-top:12px">
+        <option value="">+ Add a category to the home panel…</option>
+        <sc-for list="{{ homeCatAddOptions }}" as="o" hint-placeholder-count="0"><option value="{{ o }}">{{ o }}</option></sc-for>
+      </select>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-top:20px;max-width:440px;border:1.5px solid #d8dee3;border-radius:10px;padding:0 14px;height:46px;background:#fff">
+      <span style="color:#9aa6ae;font-size:15px">⌕</span>
+      <input value="{{ adminSearch }}" onInput="{{ onAdminSearch }}" placeholder="Search products by name, ref or category…" style="flex:1;border:none;height:44px;font:400 14px Barlow;color:#374754;background:transparent">
+    </div>
+
+    <div style="background:#fff;border:1px solid #eef1f3;border-radius:14px;overflow:hidden;margin-top:14px">
+      <div style="display:grid;grid-template-columns:2.4fr 1fr 1fr 130px;gap:12px;padding:14px 20px;border-bottom:1px solid #eef1f3;font:600 12px Barlow;letter-spacing:.04em;color:#9aa6ae;text-transform:uppercase">
+        <div>Product</div><div class="as-hidexs">Category</div><div class="as-hidexs">Condition</div><div style="text-align:right">Actions</div>
+      </div>
+      <sc-for list="{{ adminRows }}" as="r" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:2.4fr 1fr 1fr 130px;gap:12px;padding:14px 20px;border-bottom:1px solid #f1f4f6;align-items:center">
+          <div style="display:flex;align-items:center;gap:12px;min-width:0">
+            <div style="width:48px;height:48px;border-radius:8px;flex:none;overflow:hidden;position:relative;background:repeating-linear-gradient(135deg,#eef1f3 0 8px,#e7ebee 8px 16px);display:flex;align-items:center;justify-content:center;font:600 9px Barlow;color:#9aa6ae">
+              {{ r.thumbEl }}
+              <sc-if value="{{ r.noThumb }}" hint-placeholder-val="{{ true }}">{{ r.imgCount }} img</sc-if>
+            </div>
+            <div style="min-width:0"><div style="font:700 14px Archivo;color:#374754;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ r.name }}</div><div style="font:400 12px Barlow;color:#9aa6ae">{{ r.sku }}</div></div>
+          </div>
+          <div class="as-hidexs" style="font:400 14px Barlow;color:#374754">{{ r.category }}</div>
+          <div class="as-hidexs"><span style="background:#eef1f3;color:#374754;font:600 12px Barlow;padding:3px 10px;border-radius:20px">{{ r.condition }}</span></div>
+          <div style="display:flex;gap:8px;justify-content:flex-end">
+            <div onClick="{{ r.onEdit }}" style="border:1.5px solid #d8dee3;color:#374754;font:600 12px Barlow;padding:7px 13px;border-radius:7px;cursor:pointer">Edit</div>
+            <div onClick="{{ r.onDelete }}" style="border:1.5px solid #f0d4d4;color:#c0392b;font:600 12px Barlow;padding:7px 11px;border-radius:7px;cursor:pointer">Delete</div>
+          </div>
+        </div>
+      </sc-for>
+      <sc-if value="{{ adminEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:34px 20px;text-align:center;font:400 14px Barlow;color:#9aa6ae">No products match your search.</div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ adminShowPager }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px">
+        <div onClick="{{ adminPages.onPrev }}" style="{{ adminPages.prevStyle }}">←</div>
+        <sc-for list="{{ adminPages.items }}" as="pg" hint-placeholder-count="2"><div onClick="{{ pg.onClick }}" style="{{ pg.style }}">{{ pg.n }}</div></sc-for>
+        <div onClick="{{ adminPages.onNext }}" style="{{ adminPages.nextStyle }}">→</div>
+      </div>
+    </sc-if>
+
+    <div style="font:400 12.5px Barlow;color:#9aa6ae;margin-top:14px">Prototype admin — data persists in your browser (localStorage). In production this would be a secured, authenticated dashboard saving to static files (no database).</div>
+  </div>
+  </sc-if>
+
+  <!-- ============ FOOTER ============ -->
+  <div style="background:#2d3a45;color:#8e9aa3;padding:48px 5vw 28px" class="as-pad">
+    <div class="as-foot">
+      <div>
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+          <div style="width:32px;height:36px;background:#fff;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border-left:3px solid #FD843B"></div>
+          <div style="line-height:1"><div style="font:800 16px Archivo;color:#fff">A&amp;S</div><div style="font:600 8px Barlow;letter-spacing:.22em;color:#FD843B;margin-top:2px">AUTO PARTS</div></div>
+        </div>
+        <p style="font:400 14px/1.6 Barlow;max-width:300px">Quality car parts — lights, batteries, ABS pumps, engines, gearboxes and suspension. Sourced, checked, ready to fit.</p>
+      </div>
+      <div>
+        <div style="font:700 13px Archivo;color:#fff;margin-bottom:14px;letter-spacing:.02em">Browse</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font:400 14px Barlow">
+          <span onClick="{{ goHome }}" style="cursor:pointer">Home</span>
+          <span onClick="{{ goCatalog }}" style="cursor:pointer">Catalog</span>
+          <span onClick="{{ goContact }}" style="cursor:pointer">Contact</span>
+        </div>
+      </div>
+      <div>
+        <div style="font:700 13px Archivo;color:#fff;margin-bottom:14px;letter-spacing:.02em">Categories</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font:400 14px Barlow">
+          <span onClick="{{ goCatalog }}" style="cursor:pointer">Lights</span>
+          <span onClick="{{ goCatalog }}" style="cursor:pointer">Batteries</span>
+          <span onClick="{{ goCatalog }}" style="cursor:pointer">Engine &amp; Gearbox</span>
+          <span onClick="{{ goCatalog }}" style="cursor:pointer">Suspension</span>
+        </div>
+      </div>
+      <div>
+        <div style="font:700 13px Archivo;color:#fff;margin-bottom:14px;letter-spacing:.02em">Get in touch</div>
+        <div style="display:flex;flex-direction:column;gap:10px;font:400 14px Barlow">
+          <span>0123 456 7890</span>
+          <span>parts@asautoparts.co.uk</span>
+          <span>Mon–Fri 8–6 · Sat 9–4</span>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid #3a4753;margin-top:34px;padding-top:18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font:400 13px Barlow">
+      <span>© 2026 A&amp;S Auto Parts. All rights reserved.</span>
+      <span style="display:flex;gap:18px"><span>Privacy</span><span>Terms</span><span onClick="{{ goAdmin }}" style="cursor:pointer;color:#6b7780">Admin</span></span>
+    </div>
+  </div>
+
+  <!-- ============ ADMIN FORM MODAL ============ -->
+  <sc-if value="{{ showForm }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:100;background:rgba(45,58,69,.5);display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow:auto">
+    <div style="background:#fff;border-radius:16px;width:100%;max-width:580px;padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.25)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div style="font:800 22px Archivo;color:#374754">{{ formTitle }}</div>
+        <div onClick="{{ closeForm }}" style="cursor:pointer;color:#9aa6ae;font-size:22px;line-height:1">×</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Product name *</div><input value="{{ form.name }}" onInput="{{ fName }}" placeholder="e.g. Headlight Assembly" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span style="font:600 13px Barlow;color:#374754">Category</span><span onClick="{{ toggleCatAdd }}" style="font:600 11px Barlow;color:#FD843B;cursor:pointer">Manage</span></div>
+            <select value="{{ form.category }}" onChange="{{ fCategory }}" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 11px;font:400 15px Barlow;color:#374754;background:#fff">
+              <sc-for list="{{ catOptions }}" as="o" hint-placeholder-count="6"><option value="{{ o }}">{{ o }}</option></sc-for>
+            </select>
+            <sc-if value="{{ catAdding }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border:1px solid #eef1f3;border-radius:10px;padding:10px;background:#f7f9fa">
+                <div style="display:flex;gap:6px">
+                  <input value="{{ catNew }}" onInput="{{ onCatNew }}" placeholder="New category name" style="flex:1;min-width:0;height:38px;border:1.5px solid #d8dee3;border-radius:8px;padding:0 11px;font:400 14px Barlow;color:#374754">
+                  <div onClick="{{ confirmCatAdd }}" style="background:#374754;color:#fff;padding:0 14px;height:38px;display:flex;align-items:center;border-radius:8px;font:600 13px Barlow;cursor:pointer">Add</div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+                  <sc-for list="{{ catManage }}" as="m" hint-placeholder-count="6">
+                    <div style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #d8dee3;border-radius:20px;padding:4px 5px 4px 12px;font:500 12px Barlow;color:#374754">{{ m.name }}<span onClick="{{ m.onRemove }}" title="{{ m.title }}" style="{{ m.xStyle }}">×</span></div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span style="font:600 13px Barlow;color:#374754">Condition</span><span onClick="{{ toggleCondAdd }}" style="font:600 11px Barlow;color:#FD843B;cursor:pointer">Manage</span></div>
+            <select value="{{ form.condition }}" onChange="{{ fCondition }}" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 11px;font:400 15px Barlow;color:#374754;background:#fff">
+              <sc-for list="{{ condOptions }}" as="o" hint-placeholder-count="4"><option value="{{ o }}">{{ o }}</option></sc-for>
+            </select>
+            <sc-if value="{{ condAdding }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:8px;border:1px solid #eef1f3;border-radius:10px;padding:10px;background:#f7f9fa">
+                <div style="display:flex;gap:6px">
+                  <input value="{{ condNew }}" onInput="{{ onCondNew }}" placeholder="New condition name" style="flex:1;min-width:0;height:38px;border:1.5px solid #d8dee3;border-radius:8px;padding:0 11px;font:400 14px Barlow;color:#374754">
+                  <div onClick="{{ confirmCondAdd }}" style="background:#374754;color:#fff;padding:0 14px;height:38px;display:flex;align-items:center;border-radius:8px;font:600 13px Barlow;cursor:pointer">Add</div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
+                  <sc-for list="{{ condManage }}" as="m" hint-placeholder-count="4">
+                    <div style="display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #d8dee3;border-radius:20px;padding:4px 5px 4px 12px;font:500 12px Barlow;color:#374754">{{ m.name }}<span onClick="{{ m.onRemove }}" title="{{ m.title }}" style="{{ m.xStyle }}">×</span></div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+        <div><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Part reference</div><input value="{{ form.sku }}" onInput="{{ fSku }}" placeholder="e.g. AS-LT-1042" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754"></div>
+        <div><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Short description</div><input value="{{ form.shortDesc }}" onInput="{{ fShort }}" placeholder="One-line summary shown on cards" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754"></div>
+        <div><div style="font:600 13px Barlow;color:#374754;margin-bottom:6px">Full description</div><textarea value="{{ form.description }}" onInput="{{ fDesc }}" placeholder="Detailed description for the product page" style="width:100%;height:96px;border:1.5px solid #d8dee3;border-radius:9px;padding:11px 13px;font:400 15px Barlow;color:#374754;resize:vertical"></textarea></div>
+
+        <!-- images -->
+        <div style="border-top:1px solid #eef1f3;padding-top:16px">
+          <div style="font:600 13px Barlow;color:#374754;margin-bottom:4px">Product images</div>
+          <div style="font:400 12px Barlow;color:#9aa6ae;margin-bottom:12px">One image shows as a single photo; two or more form a carousel. Drag images to reorder.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+            <sc-for list="{{ formImages }}" as="im" hint-placeholder-count="0">
+              <div draggable="{{ true }}" onDragStart="{{ im.onDragStart }}" onDragOver="{{ onImgDragOver }}" onDrop="{{ im.onDrop }}" style="position:relative;width:74px;height:74px;border-radius:9px;overflow:hidden;border:1px solid #eef1f3;background:repeating-linear-gradient(135deg,#eef1f3 0 8px,#e7ebee 8px 16px);display:flex;align-items:center;justify-content:center;font:500 8px ui-monospace,monospace;color:#9aa6ae;text-align:center;padding:4px;flex:none;cursor:grab">
+                {{ im.thumbEl }}
+                <sc-if value="{{ im.isPlaceholder }}" hint-placeholder-val="{{ true }}">{{ im.label }}</sc-if>
+                <div onClick="{{ im.onRemove }}" style="position:absolute;top:3px;right:3px;width:19px;height:19px;border-radius:50%;background:rgba(45,58,69,.88);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;cursor:pointer">×</div>
+              </div>
+            </sc-for>
+            <label style="width:74px;height:74px;border:1.5px dashed #c2cad0;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#6b7780;font:600 10px Barlow;flex:none;text-align:center;gap:2px">
+              <span style="font-size:20px;line-height:1">+</span>Upload
+              <input type="file" accept="image/*" multiple="{{ true }}" onChange="{{ onUploadImages }}" style="display:none">
+            </label>
+          </div>
+        </div>
+
+        <!-- specs -->
+        <div style="border-top:1px solid #eef1f3;padding-top:16px">
+          <div style="font:600 13px Barlow;color:#374754;margin-bottom:4px">Specifications</div>
+          <div style="font:400 12px Barlow;color:#9aa6ae;margin-bottom:12px">Add key/value pairs. If you add none, the specifications section is hidden on the product page.</div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ formSpecs }}" as="sp" hint-placeholder-count="0">
+              <div style="display:flex;gap:8px;align-items:center">
+                <input value="{{ sp.label }}" onInput="{{ sp.onLabel }}" placeholder="Label (e.g. Voltage)" style="flex:1;min-width:0;height:42px;border:1.5px solid #d8dee3;border-radius:8px;padding:0 12px;font:400 14px Barlow;color:#374754">
+                <input value="{{ sp.value }}" onInput="{{ sp.onValue }}" placeholder="Value (e.g. 12V)" style="flex:1;min-width:0;height:42px;border:1.5px solid #d8dee3;border-radius:8px;padding:0 12px;font:400 14px Barlow;color:#374754">
+                <div onClick="{{ sp.onRemove }}" style="width:40px;height:42px;border:1.5px solid #f0d4d4;color:#c0392b;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;font-size:16px">×</div>
+              </div>
+            </sc-for>
+          </div>
+          <div onClick="{{ addSpec }}" style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;border:1.5px solid #d8dee3;color:#374754;padding:9px 16px;border-radius:8px;font:600 13px Barlow;cursor:pointer">+ Add specification</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:24px">
+        <div onClick="{{ closeForm }}" style="border:1.5px solid #d8dee3;color:#374754;padding:12px 22px;border-radius:9px;font:600 15px Barlow;cursor:pointer">Cancel</div>
+        <div onClick="{{ saveProduct }}" style="background:#FD843B;color:#fff;padding:12px 26px;border-radius:9px;font:600 15px Barlow;cursor:pointer">Save product</div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;scrollToBrowse&quot;: {&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},
+  &quot;showCategoryCounts&quot;: {&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},
+  &quot;homePerPage&quot;: {&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:12,&quot;min&quot;:3,&quot;max&quot;:12,&quot;step&quot;:3,&quot;unit&quot;:&quot;per page&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pagination&quot;},
+  &quot;catalogPerPage&quot;: {&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:18,&quot;min&quot;:3,&quot;max&quot;:18,&quot;step&quot;:3,&quot;unit&quot;:&quot;per page&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Pagination&quot;}
+}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.KEY = 'as_products_v1';
+    this.CKEY = 'as_categories_v1';
+    this.QKEY = 'as_conditions_v1';
+    this.SKEY = 'as_settings_v1';
+    this.state = {
+      route:'home', activeCategory:'All', activeConditions:[], filtersOpen:false, openFacets:{category:true,condition:true}, searchQuery:'',
+      homePage:1, catPage:1, selectedId:null, galleryIndex:0,
+      adminSearch:'', adminPage:1, relatedIds:[],
+      categories:['Lights','Batteries','ABS Pumps','Engine','Gearbox','Suspension'],
+      conditions:['New','Refurbished','Reclaimed','Tested Used'],
+      settings:{ chipCats:['Lights','Batteries','ABS Pumps','Engine','Gearbox'], homeCats:['Lights','Batteries','ABS Pumps','Engine','Gearbox','Suspension'], conditionFilter:true },
+      catAdding:false, catNew:'', condAdding:false, condNew:'',
+      products:this.seed(), showAdminForm:false, contactSent:false,
+      form:{ id:null, name:'', category:'Lights', condition:'New', sku:'', shortDesc:'', description:'', gallery:[], specs:[] }
+    };
+  }
+  componentDidMount(){
+    try{ const raw = localStorage.getItem(this.KEY); if(raw){ const a = JSON.parse(raw); if(Array.isArray(a)&&a.length) this.setState({products:a}); } }catch(e){}
+    try{ const rc = localStorage.getItem(this.CKEY); if(rc){ const a = JSON.parse(rc); if(Array.isArray(a)&&a.length) this.setState({categories:a}); } }catch(e){}
+    try{ const rq = localStorage.getItem(this.QKEY); if(rq){ const a = JSON.parse(rq); if(Array.isArray(a)&&a.length) this.setState({conditions:a}); } }catch(e){}
+    try{ const rs = localStorage.getItem(this.SKEY); if(rs){ const o = JSON.parse(rs); if(o&&typeof o==='object') this.setState(st=>({settings:Object.assign({},st.settings,o)})); } }catch(e){}
+  }
+  seed(){
+    const g = ['FRONT VIEW','ANGLE','DETAIL','FITTED'];
+    const mk = (id,name,category,condition,sku,shortDesc,description,specs,compatibility)=>({id,name,category,condition,sku,shortDesc,description,gallery:g,specs,compatibility});
+    return [
+      mk('p01','Headlight Assembly','Lights','New','AS-LT-1042','Complete OE-spec headlight unit, plug-and-play fitment.','Direct-replacement headlight assembly with integrated indicator. Sealed against moisture and supplied with mounting brackets. A straight swap for the original unit — no modification required.',[{label:'Side',value:'Driver / O/S'},{label:'Bulb type',value:'H7 / LED DRL'},{label:'Connector',value:'OE plug'},{label:'Warranty',value:'12 months'}],['VW Golf Mk7 (2013–2019)','Audi A3 8V','Seat Leon 5F']),
+      mk('p02','LED Tail Light','Lights','New','AS-LT-2210','Bright LED rear cluster with sequential indicator.','High-output LED tail light cluster offering improved visibility and a modern light signature. Fully road-legal and E-marked.',[{label:'Side',value:'Passenger / N/S'},{label:'Type',value:'Full LED'},{label:'Finish',value:'Smoked'},{label:'Warranty',value:'12 months'}],['BMW 3 Series F30','BMW 4 Series F32']),
+      mk('p03','Fog Light Kit','Lights','New','AS-LT-0098','Front fog lamp pair with bezels and wiring.','Complete front fog light kit including left and right lamps, surround bezels and connector loom. Improves low-visibility driving.',[{label:'Contents',value:'Pair + bezels'},{label:'Bulb',value:'H11'},{label:'Lens',value:'Clear'},{label:'Warranty',value:'12 months'}],['Ford Focus Mk3','Ford Fiesta Mk7']),
+      mk('p04','AGM Battery 12V','Batteries','New','AS-BT-7700','Sealed AGM battery for start-stop vehicles.','Absorbent Glass Mat battery engineered for modern start-stop systems and high electrical demand. Maintenance-free and vibration resistant.',[{label:'Voltage',value:'12V'},{label:'Capacity',value:'70Ah'},{label:'CCA',value:'760A'},{label:'Tech',value:'AGM'}],['Most start-stop vehicles','VAG group','BMW / Mini']),
+      mk('p05','Start-Stop Battery','Batteries','New','AS-BT-6100','EFB battery, reliable cold-start performance.','Enhanced Flooded Battery designed for entry-level start-stop applications. Strong cyclic durability and dependable cold cranking.',[{label:'Voltage',value:'12V'},{label:'Capacity',value:'65Ah'},{label:'CCA',value:'650A'},{label:'Tech',value:'EFB'}],['Vauxhall Astra','Ford Focus','Peugeot 308']),
+      mk('p06','Heavy Duty Battery','Batteries','New','AS-BT-9000','High-capacity battery for vans and 4x4s.','Robust heavy-duty battery built for commercial vehicles, vans and large diesels with demanding electrical loads.',[{label:'Voltage',value:'12V'},{label:'Capacity',value:'100Ah'},{label:'CCA',value:'900A'},{label:'Tech',value:'Calcium'}],['Ford Transit','Mercedes Sprinter','VW Crafter']),
+      mk('p07','ABS Pump & Module','ABS Pumps','Refurbished','AS-AB-3340','Tested ABS hydraulic pump with control module.','Professionally remanufactured ABS pump and ECU assembly. Bench-tested and coded-ready. Resolves common ABS / traction faults.',[{label:'Type',value:'Pump + ECU'},{label:'Test',value:'Bench tested'},{label:'Ports',value:'OE match'},{label:'Warranty',value:'12 months'}],['VW Passat B6','Audi A4 B7','Skoda Octavia']),
+      mk('p08','ABS Control Unit','ABS Pumps','Refurbished','AS-AB-2280','Remanufactured ABS ECU, fault-cleared.','Refurbished ABS control unit, electronically tested and repaired for known internal faults. Supplied ready to fit.',[{label:'Type',value:'ECU only'},{label:'Test',value:'Electronic'},{label:'Coding',value:'May be required'},{label:'Warranty',value:'12 months'}],['Ford Focus Mk2','Ford C-Max']),
+      mk('p09','ABS Hydraulic Block','ABS Pumps','Tested Used','AS-AB-1175','Genuine used ABS modulator block, leak-checked.','Original ABS hydraulic modulator block, pressure and leak tested. A cost-effective alternative to new where the ECU is sound.',[{label:'Type',value:'Hydraulic block'},{label:'Test',value:'Pressure tested'},{label:'Condition',value:'Graded A'},{label:'Warranty',value:'90 days'}],['BMW 1 Series E87','BMW 3 Series E90']),
+      mk('p10','Complete Engine 2.0 TDI','Engine','Tested Used','AS-EN-5012','Low-mileage diesel engine, compression tested.','Complete used 2.0 TDI engine with documented mileage and full compression test. Supplied as a bare unit with ancillaries available.',[{label:'Capacity',value:'1968cc'},{label:'Fuel',value:'Diesel'},{label:'Mileage',value:'~78k'},{label:'Warranty',value:'90 days'}],['VW / Audi 2.0 TDI','Seat / Skoda 2.0 TDI']),
+      mk('p11','Cylinder Head','Engine','Refurbished','AS-EN-3308','Reconditioned cylinder head, pressure tested.','Fully reconditioned cylinder head — skimmed, crack-tested and rebuilt with new valve stem seals. Ready to fit.',[{label:'Material',value:'Aluminium'},{label:'Valves',value:'16v'},{label:'Test',value:'Crack tested'},{label:'Warranty',value:'12 months'}],['1.6 HDi / TDCi engines']),
+      mk('p12','Turbocharger','Engine','Refurbished','AS-EN-7741','Remanufactured turbo, balanced core.','Remanufactured turbocharger with a newly balanced CHRA and fresh seals. Restores boost and reliability.',[{label:'Type',value:'VGT'},{label:'Actuator',value:'Electronic'},{label:'Balanced',value:'Yes'},{label:'Warranty',value:'12 months'}],['2.0 TDI / HDi applications']),
+      mk('p13','6-Speed Manual Gearbox','Gearbox','Tested Used','AS-GB-4420','Smooth-shifting manual transmission, road tested.','Used 6-speed manual gearbox, inspected and road tested for clean shifts and quiet bearings. Drain and refill recommended on fitting.',[{label:'Gears',value:'6-speed'},{label:'Type',value:'Manual'},{label:'Condition',value:'Graded A'},{label:'Warranty',value:'90 days'}],['VW Golf 1.6 TDI','Audi A3 2.0 TDI']),
+      mk('p14','Automatic Gearbox','Gearbox','Refurbished','AS-GB-8890','Rebuilt automatic transmission unit.','Professionally rebuilt automatic gearbox with new friction plates and seals. Fully tested before dispatch.',[{label:'Type',value:'Automatic'},{label:'Gears',value:'8-speed'},{label:'Rebuild',value:'Full'},{label:'Warranty',value:'12 months'}],['BMW ZF 8HP applications']),
+      mk('p15','Clutch Kit','Gearbox','New','AS-GB-1203','3-piece clutch kit with bearing.','Complete clutch kit including cover, plate and release bearing. OE-quality friction material for long service life.',[{label:'Contents',value:'3-piece'},{label:'Dia.',value:'240mm'},{label:'DMF',value:'Compatible'},{label:'Warranty',value:'12 months'}],['Ford Focus 1.6 TDCi','Volvo V40']),
+      mk('p16','Front Shock Absorber','Suspension','New','AS-SU-5560','Gas-pressure front damper, sold individually.','Gas-pressurised front shock absorber delivering controlled ride and handling. Fit in pairs for best results.',[{label:'Position',value:'Front'},{label:'Type',value:'Gas'},{label:'Mount',value:'OE'},{label:'Warranty',value:'24 months'}],['Vauxhall Corsa D','Vauxhall Astra J']),
+      mk('p17','Coil Spring Set','Suspension','New','AS-SU-3321','Matched pair of front coil springs.','Matched pair of front coil springs manufactured to OE ride height and rate. Powder-coated for corrosion resistance.',[{label:'Position',value:'Front'},{label:'Qty',value:'Pair'},{label:'Coating',value:'Powder'},{label:'Warranty',value:'24 months'}],['Ford Focus Mk3','Ford Kuga']),
+      mk('p18','Control Arm','Suspension','New','AS-SU-9087','Front lower control arm with bushes & ball joint.','Complete front lower control arm supplied with pressed bushes and ball joint fitted. Restores steering precision.',[{label:'Position',value:'Front lower'},{label:'Side',value:'O/S or N/S'},{label:'Joints',value:'Included'},{label:'Warranty',value:'24 months'}],['Audi A4 B8','Audi A5 8T'])
+    ];
+  }
+  persist(products){ try{ localStorage.setItem(this.KEY, JSON.stringify(products)); }catch(e){} this.setState({products}); }
+  persistCats(categories){ try{ localStorage.setItem(this.CKEY, JSON.stringify(categories)); }catch(e){} this.setState({categories}); }
+  persistConds(conditions){ try{ localStorage.setItem(this.QKEY, JSON.stringify(conditions)); }catch(e){} this.setState({conditions}); }
+  toggleCatAdd(){ this.setState(st=>({catAdding:!st.catAdding, catNew:''})); }
+  onCatNew(e){ this.setState({catNew:e.target.value}); }
+  confirmCatAdd(){ const n=(this.state.catNew||'').trim(); if(!n){ this.setState({catAdding:false}); return; } const exists=this.state.categories.some(c=>c.toLowerCase()===n.toLowerCase()); const categories= exists ? this.state.categories : this.state.categories.concat([n]); this.persistCats(categories); this.setState(st=>({form:Object.assign({},st.form,{category:n}), catAdding:false, catNew:''})); }
+  toggleCondAdd(){ this.setState(st=>({condAdding:!st.condAdding, condNew:''})); }
+  onCondNew(e){ this.setState({condNew:e.target.value}); }
+  confirmCondAdd(){ const n=(this.state.condNew||'').trim(); if(!n){ this.setState({condAdding:false}); return; } const exists=this.state.conditions.some(c=>c.toLowerCase()===n.toLowerCase()); const conditions= exists ? this.state.conditions : this.state.conditions.concat([n]); this.persistConds(conditions); this.setState(st=>({form:Object.assign({},st.form,{condition:n}), condAdding:false, condNew:''})); }
+  scrollTop(){ try{ window.scrollTo(0,0); }catch(e){} }
+  _scrollToBrowse(){
+    const el = [...document.querySelectorAll('.as-pad')].find(d=>/^\s*Browse our parts/.test(d.textContent));
+    if(!el) return;
+    const targetY = Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 70);
+    const startY = window.pageYOffset, dist = targetY - startY, dur = 460;
+    if(Math.abs(dist) < 4) return;
+    let t0 = null;
+    const step = (ts)=>{ if(t0==null) t0=ts; const p=Math.min(1,(ts-t0)/dur); const e = p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2; window.scrollTo(0, startY + dist*e); if(p<1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+  go(r){ this.setState({route:r, contactSent:false}); this.scrollTop(); }
+  openProduct(id){ const sp=this.state.products.find(p=>p.id===id); let relatedIds=[]; if(sp){ const pool=this.state.products.filter(p=>p.category===sp.category && p.id!==id); relatedIds=this._shuffle(pool).slice(0,3).map(p=>p.id); } this.setState({route:'product', selectedId:id, galleryIndex:0, relatedIds}); this.scrollTop(); }
+  _shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  _moveImage(from,to){ if(from==null||to==null||from===to) return; this.setState(st=>{ const g=(st.form.gallery||[]).slice(); if(from<0||from>=g.length) return {}; const m=g.splice(from,1)[0]; g.splice(to,0,m); return {form:Object.assign({},st.form,{gallery:g})}; }); this._dragImg=null; }
+  removeCategory(c){ if(this.state.products.some(p=>p.category===c)) return; const categories=this.state.categories.filter(x=>x!==c); this.persistCats(categories); this.setState(st=>(st.form.category===c ? {form:Object.assign({},st.form,{category:(categories[0]||'')})} : {})); }
+  removeCondition(c){ if(this.state.products.some(p=>p.condition===c)) return; const conditions=this.state.conditions.filter(x=>x!==c); this.persistConds(conditions); this.setState(st=>(st.form.condition===c ? {form:Object.assign({},st.form,{condition:(conditions[0]||'')})} : {})); }
+  selectCategory(c){
+    this.setState({activeCategory:c, homePage:1, catPage:1});
+    if(this.props.scrollToBrowse === false) return;
+    setTimeout(()=>this._scrollToBrowse(), 60);
+  }
+  onSearch(e){ this.setState({searchQuery:e.target.value, catPage:1, homePage:1}); }
+  toggleCondition(c){ this.setState(st=>{ const has=st.activeConditions.includes(c); return {activeConditions: has ? st.activeConditions.filter(x=>x!==c) : st.activeConditions.concat([c]), catPage:1}; }); }
+  clearFilters(){ this.setState({activeCategory:'All', activeConditions:[], catPage:1}); }
+  toggleFilters(){ this.setState(st=>({filtersOpen:!st.filtersOpen})); }
+  toggleFacet(k){ this.setState(st=>({openFacets:Object.assign({},st.openFacets,{[k]:!st.openFacets[k]})})); }
+  persistSettings(settings){ try{ localStorage.setItem(this.SKEY, JSON.stringify(settings)); }catch(e){} this.setState({settings}); }
+  addChipCat(c){ if(!c) return; const cur=this.state.settings.chipCats||[]; if(cur.includes(c)) return; this.persistSettings(Object.assign({},this.state.settings,{chipCats:cur.concat([c])})); }
+  removeChipCat(c){ const cur=this.state.settings.chipCats||[]; this.persistSettings(Object.assign({},this.state.settings,{chipCats:cur.filter(x=>x!==c)})); }
+  addHomeCat(c){ if(!c) return; const cur=this.state.settings.homeCats||[]; if(cur.includes(c)) return; this.persistSettings(Object.assign({},this.state.settings,{homeCats:cur.concat([c])})); }
+  removeHomeCat(c){ const cur=this.state.settings.homeCats||[]; this.persistSettings(Object.assign({},this.state.settings,{homeCats:cur.filter(x=>x!==c)})); }
+  toggleConditionFilter(){ this.persistSettings(Object.assign({},this.state.settings,{conditionFilter:!this.state.settings.conditionFilter})); }
+  heroKey(e){ if(e.key==='Enter'){ this.setState({route:'catalog'}); this.scrollTop(); } }
+  setHomePage(n){ this.setState({homePage:n}); this.scrollTop(); }
+  setCatPage(n){ this.setState({catPage:n}); this.scrollTop(); }
+  sendContact(){ this.setState({contactSent:true}); }
+  resetContact(){ this.setState({contactSent:false}); }
+  updateForm(k,v){ this.setState(s=>({form:Object.assign({},s.form,{[k]:v})})); }
+  openAdd(){ this.setState({showAdminForm:true, form:{id:null,name:'',category:'Lights',condition:'New',sku:'',shortDesc:'',description:'',gallery:[],specs:[]}}); }
+  openEdit(p){ this.setState({showAdminForm:true, form:{id:p.id,name:p.name,category:p.category,condition:p.condition,sku:p.sku,shortDesc:p.shortDesc,description:p.description, gallery:this._normGallery(p.gallery), specs:(p.specs||[]).map(x=>({label:x.label||'',value:x.value||''}))}}); }
+  closeForm(){ this.setState({showAdminForm:false}); }
+  saveProduct(){
+    const f = this.state.form;
+    if(!f.name.trim()) return;
+    const gallery = (f.gallery||[]).map(g=>({src:g.src||null,label:g.label||''}));
+    const specs = (f.specs||[]).filter(x=>(x.label||'').trim()||(x.value||'').trim()).map(x=>({label:(x.label||'').trim(),value:(x.value||'').trim()}));
+    let products = this.state.products.slice();
+    if(f.id){
+      products = products.map(p => p.id===f.id ? Object.assign({},p,{name:f.name.trim(),category:f.category,condition:f.condition,sku:f.sku.trim(),shortDesc:f.shortDesc,description:f.description, gallery, specs}) : p);
+    } else {
+      products.unshift({ id:'p'+Date.now(), name:f.name.trim(), category:f.category, condition:f.condition, sku:f.sku.trim()||'—', shortDesc:f.shortDesc||'', description:f.description||'', gallery, specs, compatibility:[] });
+    }
+    this.persist(products);
+    this.setState({showAdminForm:false});
+  }
+  removeProduct(id){ try{ if(!window.confirm('Delete this product?')) return; }catch(e){} const products=this.state.products.filter(p=>p.id!==id); this.persist(products); }
+
+  _normGallery(g){ return (g||[]).map(it => typeof it==='string' ? {src:null,label:it} : {src:(it&&it.src)||null,label:(it&&it.label)||''}); }
+  _downscale(dataUrl,max,q){
+    return new Promise(res=>{ try{ const img=new Image(); img.onload=()=>{ let w=img.width,h=img.height; if(w>max||h>max){ const r=Math.min(max/w,max/h); w=Math.round(w*r); h=Math.round(h*r); } const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h); try{ res(c.toDataURL('image/jpeg',q)); }catch(e){ res(dataUrl); } }; img.onerror=()=>res(dataUrl); img.src=dataUrl; }catch(e){ res(dataUrl); } });
+  }
+  onUploadImages(e){
+    const files = Array.from(e.target.files||[]); e.target.value='';
+    files.forEach(file=>{ const reader=new FileReader(); reader.onload=()=>{ this._downscale(reader.result,1000,0.82).then(src=>{ this.setState(st=>({form:Object.assign({},st.form,{gallery:(st.form.gallery||[]).concat([{src,label:file.name}])})})); }); }; reader.readAsDataURL(file); });
+  }
+  removeImage(i){ this.setState(st=>{ const g=(st.form.gallery||[]).slice(); g.splice(i,1); return {form:Object.assign({},st.form,{gallery:g})}; }); }
+  addSpec(){ this.setState(st=>({form:Object.assign({},st.form,{specs:(st.form.specs||[]).concat([{label:'',value:''}])})})); }
+  updateSpec(i,k,v){ this.setState(st=>{ const sp=(st.form.specs||[]).slice(); sp[i]=Object.assign({},sp[i],{[k]:v}); return {form:Object.assign({},st.form,{specs:sp})}; }); }
+  removeSpec(i){ this.setState(st=>{ const sp=(st.form.specs||[]).slice(); sp.splice(i,1); return {form:Object.assign({},st.form,{specs:sp})}; }); }
+  onAdminSearch(e){ this.setState({adminSearch:e.target.value, adminPage:1}); }
+  setAdminPage(n){ this.setState({adminPage:n}); }
+
+  _pageStyle(active){ const b='min-width:38px;height:38px;padding:0 11px;display:flex;align-items:center;justify-content:center;border-radius:8px;font:600 14px Barlow;cursor:pointer;'; return active ? b+'background:#374754;color:#fff;' : b+'background:#fff;color:#374754;border:1px solid #d8dee3;'; }
+  _navBtnStyle(disabled){ const b='width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:8px;font:600 16px Barlow;border:1px solid #d8dee3;background:#fff;'; return disabled ? b+'color:#c2cad0;cursor:default;' : b+'color:#374754;cursor:pointer;'; }
+  _catItemStyle(active){ const b='display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-radius:10px;cursor:pointer;font:600 15px Barlow;'; return active ? b+'background:#374754;color:#fff;' : b+'background:#fff;color:#374754;border:1px solid #eef1f3;'; }
+  _chipStyle(active){ const b='padding:9px 17px;border-radius:30px;font:600 13px Barlow;cursor:pointer;white-space:nowrap;'; return active ? b+'background:#FD843B;color:#fff;' : b+'background:#fff;color:#374754;border:1px solid #d8dee3;'; }
+  _sideCatStyle(active){ const b='display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:8px;cursor:pointer;font:600 14px Barlow;'; return active ? b+'background:#374754;color:#fff;' : b+'background:transparent;color:#374754;'; }
+  _condBoxStyle(active){ const b='width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;flex:none;'; return active ? b+'background:#FD843B;border:1.5px solid #FD843B;' : b+'background:#fff;border:1.5px solid #c2cad0;'; }
+  _chipToggleStyle(on){ const b='display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:30px;font:600 13px Barlow;cursor:pointer;user-select:none;'; return on ? b+'background:#FD843B;color:#fff;border:1.5px solid #FD843B;' : b+'background:#fff;color:#6b7780;border:1.5px solid #d8dee3;'; }
+  _thumbStyle(active){ const b='height:72px;border-radius:9px;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;font:500 9px ui-monospace,monospace;color:#9aa6ae;background:repeating-linear-gradient(135deg,#eef1f3 0 10px,#e7ebee 10px 20px);'; return active ? b+'outline:2px solid #FD843B;outline-offset:1px;' : b; }
+  _dotStyle(active){ const b='width:8px;height:8px;border-radius:50%;cursor:pointer;'; return active ? b+'background:#FD843B;' : b+'background:rgba(255,255,255,.75);box-shadow:0 0 0 1px rgba(0,0,0,.08);'; }
+  _firstImg(p){ const im=this._normGallery(p.gallery).find(x=>x.src); return im?im.src:null; }
+  _card(p){ const img=this._firstImg(p); const first=this._normGallery(p.gallery)[0]; return { id:p.id, name:p.name, category:p.category, condition:p.condition, shortDesc:p.shortDesc, noImg:!img, imgEl: img ? React.createElement('img',{src:img,style:{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}}) : null, thumb:(first&&first.label)||'PART', onOpen:()=>this.openProduct(p.id) }; }
+  _pager(total,current,fn){
+    const items=[];
+    for(let n=1;n<=total;n++){ items.push({ n, onClick:()=>fn(n), style:this._pageStyle(n===current) }); }
+    return { items, onPrev:()=>fn(Math.max(1,current-1)), onNext:()=>fn(Math.min(total,current+1)), prevStyle:this._navBtnStyle(current<=1), nextStyle:this._navBtnStyle(current>=total) };
+  }
+
+  renderVals(){
+    const s = this.state;
+    const products = s.products;
+    const CATS_BASE = (s.categories && s.categories.length) ? s.categories : ['Lights','Batteries','ABS Pumps','Engine','Gearbox','Suspension'];
+    const CATS = CATS_BASE.slice();
+    products.forEach(p=>{ if(p.category && CATS.indexOf(p.category)===-1) CATS.push(p.category); });
+    const CONDS_BASE = (s.conditions && s.conditions.length) ? s.conditions : ['New','Refurbished','Reclaimed','Tested Used'];
+    const condOptions = CONDS_BASE.slice();
+    products.forEach(p=>{ if(p.condition && condOptions.indexOf(p.condition)===-1) condOptions.push(p.condition); });
+    const countFor = c => c==='All' ? products.length : products.filter(p=>p.category===c).length;
+    const activeCategoryLabel = s.activeCategory==='All' ? 'All parts' : s.activeCategory;
+    const showCounts = this.props.showCategoryCounts ?? true;
+    // storefront filter settings (admin-controlled)
+    const settings = s.settings || {};
+    const chosenChips = (settings.chipCats || []).filter(c => CATS.includes(c));
+    const homeChosen = (settings.homeCats || []).filter(c => CATS.includes(c));
+
+    // HOME category panel + grid — admin chooses which categories appear, in the order they were added
+    const homeCats = ['All'].concat(homeChosen).map(c => ({ name: c==='All'?'All parts':c, count: showCounts ? countFor(c) : '', onClick:()=>this.selectCategory(c), style:this._catItemStyle(s.activeCategory===c) }));
+    const homeFiltered = products.filter(p => s.activeCategory==='All' || p.category===s.activeCategory);
+    const homePer = this.props.homePerPage ?? 6;
+    const homeTotal = Math.max(1, Math.ceil(homeFiltered.length/homePer));
+    const homePage = Math.min(s.homePage, homeTotal);
+    const homeProducts = homeFiltered.slice((homePage-1)*homePer, homePage*homePer).map(p=>this._card(p));
+    const homePages = this._pager(homeTotal, homePage, n=>this.setHomePage(n));
+
+    // CATALOG (category + condition + search by name/description)
+    const q = (s.searchQuery||'').trim().toLowerCase();
+    const activeConds = s.activeConditions || [];
+    const catFiltered = products.filter(p => {
+      const okCat = s.activeCategory==='All' || p.category===s.activeCategory;
+      const okCond = !activeConds.length || activeConds.includes(p.condition);
+      const okQ = !q || (p.name||'').toLowerCase().includes(q) || (p.shortDesc||'').toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q);
+      return okCat && okCond && okQ;
+    });
+    const catPer = this.props.catalogPerPage ?? 9;
+    const catTotal = Math.max(1, Math.ceil(catFiltered.length/catPer));
+    const catPage = Math.min(s.catPage, catTotal);
+    const catProducts = catFiltered.slice((catPage-1)*catPer, catPage*catPer).map(p=>this._card(p));
+    const catPages = this._pager(catTotal, catPage, n=>this.setCatPage(n));
+    // quick chips: admin-chosen categories in the order they were added; rest live only in the sidebar
+    const chipCats = ['All'].concat(chosenChips);
+    const catChips = chipCats.map(c => ({ name:c, onClick:()=>this.selectCategory(c), style:this._chipStyle(s.activeCategory===c) }));
+    // sidebar: every category + every condition
+    const sidebarCats = ['All'].concat(CATS).map(c => ({ name: c==='All'?'All categories':c, count: c==='All'?products.length:countFor(c), onClick:()=>this.selectCategory(c), style:this._sideCatStyle(s.activeCategory===c) }));
+    const showConditionFilter = settings.conditionFilter !== false;
+    const condCount = c => products.filter(p => (s.activeCategory==='All'||p.category===s.activeCategory) && p.condition===c).length;
+    const sidebarConds = condOptions.map(c => { const on=activeConds.includes(c); return { name:c, count:condCount(c), onToggle:()=>this.toggleCondition(c), boxStyle:this._condBoxStyle(on), tick: on?'✓':'' }; });
+    // active filter tags
+    const activeFilterTags = [];
+    if(s.activeCategory!=='All') activeFilterTags.push({ label:s.activeCategory, onRemove:()=>this.selectCategory('All') });
+    activeConds.forEach(c => activeFilterTags.push({ label:c, onRemove:()=>this.toggleCondition(c) }));
+    const filterCount = activeFilterTags.length;
+
+    // PRODUCT
+    const sp = products.find(p=>p.id===s.selectedId) || null;
+    let product=null, related=[], galleryItems=[], dots=[];
+    let mainIsImg=false, mainSrc=null, mainLabel='', showCarousel=false, hasSpecs=false, mainImgEl=null;
+    let galPrev=()=>{}, galNext=()=>{};
+    if(sp){
+      const imgs = this._normGallery(sp.gallery);
+      const count = imgs.length;
+      const gi = count ? Math.min(s.galleryIndex, count-1) : 0;
+      const cur = count ? imgs[gi] : {src:null,label:sp.name};
+      mainIsImg = !!(cur && cur.src);
+      mainSrc = cur ? cur.src : null;
+      mainLabel = (cur && cur.label) ? cur.label : sp.name;
+      mainImgEl = mainIsImg ? React.createElement('img',{src:mainSrc,style:{width:'100%',height:'100%',objectFit:'cover',display:'block'}}) : null;
+      showCarousel = count>1;
+      galleryItems = imgs.map((it,i)=>({ isPlaceholder:!it.src, thumbEl: it.src ? React.createElement('img',{src:it.src,style:{width:'100%',height:'100%',objectFit:'cover'}}) : null, label:it.label||('IMG '+(i+1)), onClick:()=>this.setState({galleryIndex:i}), style:this._thumbStyle(i===gi) }));
+      dots = imgs.map((it,i)=>({ onClick:()=>this.setState({galleryIndex:i}), style:this._dotStyle(i===gi) }));
+      galPrev = ()=>this.setState(st=>{ const n=this._normGallery(sp.gallery).length||1; return {galleryIndex:(st.galleryIndex-1+n)%n}; });
+      galNext = ()=>this.setState(st=>{ const n=this._normGallery(sp.gallery).length||1; return {galleryIndex:(st.galleryIndex+1)%n}; });
+      const relIds = (s.relatedIds && s.relatedIds.length) ? s.relatedIds : this._shuffle(products.filter(p=>p.category===sp.category && p.id!==sp.id)).slice(0,3).map(p=>p.id);
+      related = relIds.map(id=>products.find(p=>p.id===id)).filter(Boolean).map(p=>this._card(p));
+      hasSpecs = (sp.specs||[]).length>0;
+      product = { name:sp.name, category:sp.category, condition:sp.condition, sku:sp.sku, shortDesc:sp.shortDesc, description:sp.description, specsList:sp.specs, compat:sp.compatibility };
+    }
+
+    // ADMIN (search + pagination)
+    const aq = (s.adminSearch||'').trim().toLowerCase();
+    const adminFiltered = products.filter(p => !aq || (p.name||'').toLowerCase().includes(aq) || (p.sku||'').toLowerCase().includes(aq) || (p.category||'').toLowerCase().includes(aq));
+    const adminPer = 8;
+    const adminTotal = Math.max(1, Math.ceil(adminFiltered.length/adminPer));
+    const adminPage = Math.min(s.adminPage, adminTotal);
+    const adminRows = adminFiltered.slice((adminPage-1)*adminPer, adminPage*adminPer).map(p => { const imgs=this._normGallery(p.gallery); const im=imgs.find(x=>x.src); return { name:p.name, sku:p.sku, category:p.category, condition:p.condition, noThumb:!im, thumbEl: im ? React.createElement('img',{src:im.src,style:{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}}) : null, imgCount:imgs.length, onEdit:()=>this.openEdit(p), onDelete:()=>this.removeProduct(p.id) }; });
+    const adminPages = this._pager(adminTotal, adminPage, n=>this.setAdminPage(n));
+    // admin: catalog filter settings (chip tags + dropdown) + home page categories — in added order
+    const chipTags = chosenChips.map(c => ({ name:c, onRemove:()=>this.removeChipCat(c) }));
+    const chipAddOptions = CATS.filter(c=>!chosenChips.includes(c));
+    const homeCatTags = homeChosen.map(c => ({ name:c, onRemove:()=>this.removeHomeCat(c) }));
+    const homeCatAddOptions = CATS.filter(c=>!homeChosen.includes(c));
+    const conditionFilterOn = settings.conditionFilter !== false;
+
+    // category / condition manage lists (remove blocked when in use)
+    const xActive='width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#f0d4d4;color:#c0392b;font-size:12px;line-height:1;';
+    const xOff='width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#eef1f3;color:#c2cad0;font-size:12px;line-height:1;cursor:not-allowed;';
+    const catManage = CATS.map(c=>{ const inUse=products.some(p=>p.category===c); return { name:c, onRemove: inUse ? ()=>{} : ()=>this.removeCategory(c), xStyle: inUse?xOff:xActive, title: inUse?'In use by a product — cannot remove':'Remove category' }; });
+    const condManage = condOptions.map(c=>{ const inUse=products.some(p=>p.condition===c); return { name:c, onRemove: inUse ? ()=>{} : ()=>this.removeCondition(c), xStyle: inUse?xOff:xActive, title: inUse?'In use by a product — cannot remove':'Remove condition' }; });
+
+    return {
+      // nav / routing
+      isHome:s.route==='home', isCatalog:s.route==='catalog', isProduct:s.route==='product', isContact:s.route==='contact', isAdmin:s.route==='admin',
+      goHome:()=>this.go('home'), goCatalog:()=>this.go('catalog'), goContact:()=>this.go('contact'), goAdmin:()=>this.go('admin'),
+      navHomeColor: s.route==='home'?'#FD843B':'#374754',
+      navCatalogColor: s.route==='catalog'?'#FD843B':'#374754',
+      navContactColor: s.route==='contact'?'#FD843B':'#374754',
+      totalProducts: products.length,
+      // search
+      searchQuery:s.searchQuery, onSearch:e=>this.onSearch(e), heroKey:e=>this.heroKey(e), doHeroSearch:()=>this.go('catalog'),
+      // home
+      homeCats, homeProducts, homePages, homeCount:homeFiltered.length, homeShowPager:homeTotal>1, activeCategoryLabel,
+      // catalog
+      catProducts, catPages, catChips, catCount:catFiltered.length, catShowPager:catTotal>1, catEmpty:catFiltered.length===0,
+      sidebarCats, sidebarConds, showConditionFilter, activeFilterTags,
+      catFacetOpen: s.openFacets.category!==false, condFacetOpen: s.openFacets.condition!==false,
+      toggleCatFacet:()=>this.toggleFacet('category'), toggleCondFacet:()=>this.toggleFacet('condition'),
+      catChevron: s.openFacets.category!==false ? '▾' : '▸', condChevron: s.openFacets.condition!==false ? '▾' : '▸',
+      clearFilters:()=>this.clearFilters(), clearColor: filterCount? '#FD843B':'#c2cad0',
+      toggleFilters:()=>this.toggleFilters(), filterSideClass: s.filtersOpen?'is-open':'',
+      activeFilterBadge: filterCount? ('('+filterCount+')') : '',
+      // product
+      product, related, hasRelated:related.length>0, galleryItems, dots,
+      mainIsImg, mainIsPlaceholder:!mainIsImg, mainImgEl, mainSrc, mainLabel, showCarousel, hasSpecs, galPrev, galNext,
+      // contact
+      contactSent:s.contactSent, contactNotSent:!s.contactSent, sendContact:()=>this.sendContact(), resetContact:()=>this.resetContact(),
+      // admin
+      adminRows, adminCount:products.length, adminResultCount:adminFiltered.length, adminEmpty:adminFiltered.length===0,
+      chipTags, chipAddOptions, chipNoneChosen: chipTags.length===0, onAddChip:e=>this.addChipCat(e.target.value), chipSelectValue:'',
+      homeCatTags, homeCatAddOptions, homeNoneChosen: homeCatTags.length===0, onAddHomeCat:e=>this.addHomeCat(e.target.value), homeSelectValue:'',
+      conditionFilterOn, toggleConditionFilter:()=>this.toggleConditionFilter(), conditionFilterBoxStyle:this._condBoxStyle(conditionFilterOn), conditionFilterTick: conditionFilterOn?'✓':'',
+      adminSearch:s.adminSearch, onAdminSearch:e=>this.onAdminSearch(e), adminPages, adminShowPager:adminTotal>1,
+      openAdd:()=>this.openAdd(),
+      showForm:s.showAdminForm, form:s.form, formTitle: s.form && s.form.id ? 'Edit product' : 'Add product',
+      catOptions:CATS, condOptions,
+      catAdding:s.catAdding, catNew:s.catNew, toggleCatAdd:()=>this.toggleCatAdd(), onCatNew:e=>this.onCatNew(e), confirmCatAdd:()=>this.confirmCatAdd(),
+      condAdding:s.condAdding, condNew:s.condNew, toggleCondAdd:()=>this.toggleCondAdd(), onCondNew:e=>this.onCondNew(e), confirmCondAdd:()=>this.confirmCondAdd(),
+      closeForm:()=>this.closeForm(), saveProduct:()=>this.saveProduct(),
+      formImages:(s.form.gallery||[]).map((g,i)=>({ isPlaceholder:!g.src, thumbEl: g.src ? React.createElement('img',{src:g.src,draggable:false,style:{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}}) : null, label:g.label||('Image '+(i+1)), onRemove:()=>this.removeImage(i), onDragStart:()=>{ this._dragImg=i; }, onDrop:(e)=>{ if(e&&e.preventDefault)e.preventDefault(); this._moveImage(this._dragImg,i); } })),
+      onImgDragOver:(e)=>{ if(e&&e.preventDefault)e.preventDefault(); },
+      catManage, condManage,
+      formSpecs:(s.form.specs||[]).map((sp2,i)=>({ label:sp2.label, value:sp2.value, onLabel:e=>this.updateSpec(i,'label',e.target.value), onValue:e=>this.updateSpec(i,'value',e.target.value), onRemove:()=>this.removeSpec(i) })),
+      onUploadImages:e=>this.onUploadImages(e), addSpec:()=>this.addSpec(),
+      fName:e=>this.updateForm('name',e.target.value), fCategory:e=>this.updateForm('category',e.target.value),
+      fCondition:e=>this.updateForm('condition',e.target.value), fSku:e=>this.updateForm('sku',e.target.value),
+      fShort:e=>this.updateForm('shortDesc',e.target.value), fDesc:e=>this.updateForm('description',e.target.value)
+    };
+  }
+}
+</script>
+</body>
+</html>

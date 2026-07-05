@@ -1,0 +1,344 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { loadProducts, loadSettings, loadCategories, loadConditions } from '../../lib/content';
+
+const products = loadProducts();
+const settings = loadSettings();
+const categories = loadCategories();
+const conditions = loadConditions();
+---
+<Base title="Catalog">
+  <Nav active="catalog" />
+
+  <div class="pad" style="padding-top:44px;padding-bottom:64px">
+    <h1 style="font:800 34px Archivo;color:#374754;letter-spacing:-.02em;margin:0">Catalog</h1>
+    <div id="cat-subtitle" style="font:400 15px Barlow;color:#6b7780;margin-top:6px">{products.length} parts · All categories</div>
+
+    <!-- Search -->
+    <div style="display:flex;align-items:center;gap:10px;margin:26px 0 16px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:260px;border:1.5px solid #d8dee3;border-radius:10px;padding:0 14px;height:50px">
+        <span style="color:#9aa6ae;font-size:15px">⌕</span>
+        <input id="cat-search" placeholder="Search by part name or description…" style="flex:1;border:none;height:48px;font:400 15px Barlow;color:#374754;background:transparent" autocomplete="off" />
+      </div>
+    </div>
+
+    <!-- Quick chips + mobile filter toggle -->
+    <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:26px">
+      <button class="chip chip--active" data-chip="All" id="chip-all">All</button>
+      {settings.chipCats.map((c) => (
+        <button class="chip" data-chip={c}>{c}</button>
+      ))}
+      <button class="filter-toggle chip" id="filter-toggle" style="align-items:center;gap:7px">
+        ⚙ Filters <span id="filter-badge" style="display:none;background:#374754;color:#fff;border-radius:50%;width:18px;height:18px;font:700 11px Barlow;display:none;align-items:center;justify-content:center"></span>
+      </button>
+    </div>
+
+    <div class="cat-grid">
+      <!-- Sidebar -->
+      <aside class="filter-side" id="filter-side">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font:800 17px Archivo;color:#374754;letter-spacing:-.01em">Filters</div>
+          <button id="clear-filters" style="font:600 12px Barlow;color:#9aa6ae;cursor:pointer;background:none;border:none;padding:0">Clear all</button>
+        </div>
+
+        <!-- Category facet -->
+        <div style="border-top:1px solid #eef1f3;padding-top:16px">
+          <button id="cat-facet-toggle" style="display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;margin-bottom:10px;background:none;border:none;padding:0">
+            <span style="font:600 11px Barlow;letter-spacing:.12em;text-transform:uppercase;color:#9aa6ae">Category</span>
+            <span id="cat-chevron" style="font-size:11px;color:#9aa6ae">▾</span>
+          </button>
+          <div id="cat-facet-body" style="display:flex;flex-direction:column;gap:2px">
+            <button class="sidebar-cat" data-cat="All categories" style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:8px;cursor:pointer;background:#374754;color:#fff;border:none;width:100%;font:500 14px Barlow">
+              <span>All categories</span><span style="font:600 12px Barlow;opacity:.65" id="sc-all-count">{products.length}</span>
+            </button>
+            {categories.map((c) => {
+              const cnt = products.filter((p) => p.category === c).length;
+              return (
+                <button class="sidebar-cat" data-cat={c} style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-radius:8px;cursor:pointer;background:transparent;color:#374754;border:none;width:100%;font:500 14px Barlow" data-count={cnt}>
+                  <span>{c}</span><span class="sc-count" style="font:600 12px Barlow;opacity:.65">{cnt}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <!-- Condition facet -->
+        {settings.conditionFilter && (
+          <div id="cond-section" style="border-top:1px solid #eef1f3;padding-top:16px;margin-top:18px">
+            <button id="cond-facet-toggle" style="display:flex;align-items:center;justify-content:space-between;width:100%;cursor:pointer;margin-bottom:8px;background:none;border:none;padding:0">
+              <span style="font:600 11px Barlow;letter-spacing:.12em;text-transform:uppercase;color:#9aa6ae">Condition</span>
+              <span id="cond-chevron" style="font-size:11px;color:#9aa6ae">▾</span>
+            </button>
+            <div id="cond-facet-body" style="display:flex;flex-direction:column;gap:2px">
+              {conditions.map((c) => {
+                const cnt = products.filter((p) => p.condition === c).length;
+                return (
+                  <label class="cond-row" data-cond={c} style="display:flex;align-items:center;gap:10px;padding:7px 4px;cursor:pointer;border-radius:8px">
+                    <div class="cond-box" data-cond={c} style="width:18px;height:18px;border-radius:4px;border:1.5px solid #d8dee3;display:flex;align-items:center;justify-content:center;flex:none;font-size:12px;color:#fff;background:#fff;transition:background .1s,border-color .1s"></div>
+                    <span style="flex:1;font:500 14px Barlow;color:#374754">{c}</span>
+                    <span class="cond-count" data-cond={c} style="font:600 12px Barlow;color:#9aa6ae">{cnt}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </aside>
+
+      <!-- Results -->
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;min-height:30px">
+          <span id="result-count" style="font:600 14px Barlow;color:#6b7780">{products.length} results</span>
+          <div id="active-tags" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+        </div>
+
+        <div id="empty-state" style="display:none;text-align:center;padding:70px 20px;border:1px dashed #d8dee3;border-radius:14px;color:#6b7780">
+          <div style="font:700 20px Archivo;color:#374754">No parts match your filters</div>
+          <div style="font:400 15px Barlow;margin-top:8px">Try clearing a filter, or <a href="/contact" style="color:#FD843B;font-weight:600">ask us to source it</a>.</div>
+        </div>
+
+        <div class="cards" id="cat-grid"></div>
+
+        <div class="pager" id="cat-pager" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <Footer />
+</Base>
+
+<script define:vars={{ allProducts: products, allConditions: conditions, allCategories: categories, conditionFilterEnabled: settings.conditionFilter }}>
+  const PER_PAGE = 18;
+  let activeCat = 'All categories';
+  let activeConditions = [];
+  let searchQuery = '';
+  let catFacetOpen = true;
+  let condFacetOpen = true;
+  let filtersOpen = false;
+  let page = 1;
+
+  // Parse URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('category')) activeCat = urlParams.get('category');
+  if (urlParams.get('q')) { searchQuery = urlParams.get('q'); document.getElementById('cat-search').value = searchQuery; }
+
+  function filtered() {
+    return allProducts.filter((p) => {
+      const matchCat = activeCat === 'All categories' || p.category === activeCat;
+      const matchCond = activeConditions.length === 0 || activeConditions.includes(p.condition);
+      const q = searchQuery.toLowerCase();
+      const matchQ = !q || p.name.toLowerCase().includes(q) || (p.shortDesc ?? '').toLowerCase().includes(q) || (p.description ?? '').toLowerCase().includes(q);
+      return matchCat && matchCond && matchQ;
+    });
+  }
+
+  function esc(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function cardHTML(p) {
+    const thumb = p.gallery[0]?.src ?? null;
+    const img = thumb
+      ? `<img src="${esc(thumb)}" alt="${esc(p.name)}" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" loading="lazy" />`
+      : `<span>NO IMAGE</span>`;
+    return `<a href="/catalog/${esc(p.slug)}" class="product-card">
+      <div class="img-placeholder" style="height:172px;position:relative">${img}</div>
+      <div style="padding:15px 17px;display:flex;flex-direction:column;gap:9px;flex:1">
+        <div style="display:flex;gap:7px;align-items:center">
+          <span style="background:#eef1f3;color:#374754;font:600 11px Barlow;padding:3px 9px;border-radius:20px">${esc(p.category)}</span>
+          <span style="color:#FD843B;font:600 11px Barlow">${esc(p.condition)}</span>
+        </div>
+        <div style="font:700 16px Archivo;color:#374754;line-height:1.25">${esc(p.name)}</div>
+        <div style="font:400 13.5px/1.5 Barlow;color:#6b7780">${esc(p.shortDesc)}</div>
+        <div style="margin-top:auto;font:600 13px Barlow;color:#374754">View details →</div>
+      </div>
+    </a>`;
+  }
+
+  function pagerHTML(cur, total) {
+    const pd = cur <= 1, nd = cur >= total;
+    let h = `<button class="pager-btn${pd?' pager-btn--disabled':''}" data-page="prev">←</button>`;
+    for (let i = 1; i <= total; i++)
+      h += `<button class="pager-btn${i===cur?' pager-btn--active':''}" data-page="${i}">${i}</button>`;
+    h += `<button class="pager-btn${nd?' pager-btn--disabled':''}" data-page="next">→</button>`;
+    return h;
+  }
+
+  function countForCat(cat) {
+    return allProducts.filter((p) => {
+      const matchCond = activeConditions.length === 0 || activeConditions.includes(p.condition);
+      const q = searchQuery.toLowerCase();
+      const matchQ = !q || p.name.toLowerCase().includes(q) || (p.shortDesc ?? '').toLowerCase().includes(q);
+      return (cat === 'All categories' || p.category === cat) && matchCond && matchQ;
+    }).length;
+  }
+
+  function countForCond(cond) {
+    return allProducts.filter((p) => {
+      const matchCat = activeCat === 'All categories' || p.category === activeCat;
+      const q = searchQuery.toLowerCase();
+      const matchQ = !q || p.name.toLowerCase().includes(q) || (p.shortDesc ?? '').toLowerCase().includes(q);
+      return p.condition === cond && matchCat && matchQ;
+    }).length;
+  }
+
+  function render() {
+    const f = filtered();
+    const totalPages = Math.ceil(f.length / PER_PAGE);
+    page = Math.max(1, Math.min(page, totalPages || 1));
+    const slice = f.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+    // subtitle
+    const label = activeCat === 'All categories' ? 'All categories' : activeCat;
+    document.getElementById('cat-subtitle').textContent = `${f.length} parts · ${label}`;
+    document.getElementById('result-count').textContent = `${f.length} result${f.length === 1 ? '' : 's'}`;
+
+    // grid
+    document.getElementById('cat-grid').innerHTML = slice.map(cardHTML).join('');
+    document.getElementById('empty-state').style.display = f.length === 0 ? 'block' : 'none';
+    document.getElementById('cat-grid').style.display = f.length === 0 ? 'none' : 'grid';
+
+    // pager
+    const pager = document.getElementById('cat-pager');
+    if (totalPages <= 1) {
+      pager.style.display = 'none';
+    } else {
+      pager.style.display = 'flex';
+      pager.innerHTML = pagerHTML(page, totalPages);
+      pager.querySelectorAll('[data-page]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const v = btn.getAttribute('data-page');
+          if (v === 'prev') page--; else if (v === 'next') page++; else page = +v;
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+    }
+
+    // sidebar cats
+    document.querySelectorAll('.sidebar-cat').forEach((btn) => {
+      const cat = btn.getAttribute('data-cat');
+      const cnt = countForCat(cat);
+      const active = cat === activeCat;
+      btn.style.background = active ? '#374754' : 'transparent';
+      btn.style.color = active ? '#fff' : '#374754';
+      const countEl = btn.querySelector('.sc-count') ?? btn.querySelector('span:last-child');
+      if (countEl) countEl.textContent = cnt;
+    });
+
+    // condition checkboxes
+    document.querySelectorAll('.cond-box').forEach((box) => {
+      const cond = box.getAttribute('data-cond');
+      const checked = activeConditions.includes(cond);
+      box.style.background = checked ? '#FD843B' : '#fff';
+      box.style.borderColor = checked ? '#FD843B' : '#d8dee3';
+      box.textContent = checked ? '✓' : '';
+    });
+    document.querySelectorAll('.cond-count').forEach((el) => {
+      el.textContent = countForCond(el.getAttribute('data-cond'));
+    });
+
+    // chips
+    document.querySelectorAll('[data-chip]').forEach((btn) => {
+      const chip = btn.getAttribute('data-chip');
+      const catMatch = chip === 'All' ? activeCat === 'All categories' : activeCat === chip;
+      btn.classList.toggle('chip--active', catMatch);
+    });
+
+    // active filter tags
+    const tags = document.getElementById('active-tags');
+    const tagItems = [];
+    if (activeCat !== 'All categories') tagItems.push({ label: activeCat, type: 'cat' });
+    activeConditions.forEach((c) => tagItems.push({ label: c, type: 'cond', value: c }));
+    tags.innerHTML = tagItems.map((t) =>
+      `<button class="filter-tag" data-type="${t.type}" data-value="${esc(t.value ?? t.label)}" style="display:inline-flex;align-items:center;gap:6px;background:#374754;color:#fff;font:600 12px Barlow;padding:5px 12px;border-radius:20px;cursor:pointer;border:none">
+        ${esc(t.label)} <span style="opacity:.7;font-size:13px">×</span>
+      </button>`
+    ).join('');
+    tags.querySelectorAll('.filter-tag').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const type = btn.getAttribute('data-type');
+        const val = btn.getAttribute('data-value');
+        if (type === 'cat') { activeCat = 'All categories'; }
+        else { activeConditions = activeConditions.filter((c) => c !== val); }
+        page = 1; render();
+      });
+    });
+
+    // clear all button colour
+    const clearBtn = document.getElementById('clear-filters');
+    const hasActive = activeCat !== 'All categories' || activeConditions.length > 0 || searchQuery;
+    clearBtn.style.color = hasActive ? '#FD843B' : '#9aa6ae';
+
+    // filter badge
+    const badge = document.getElementById('filter-badge');
+    const cnt = (activeCat !== 'All categories' ? 1 : 0) + activeConditions.length;
+    if (badge) {
+      if (cnt > 0) { badge.textContent = cnt; badge.style.display = 'inline-flex'; }
+      else { badge.style.display = 'none'; }
+    }
+  }
+
+  // Chips
+  document.querySelectorAll('[data-chip]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const chip = btn.getAttribute('data-chip');
+      activeCat = chip === 'All' ? 'All categories' : chip;
+      page = 1; render();
+    });
+  });
+
+  // Sidebar category
+  document.querySelectorAll('.sidebar-cat').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activeCat = btn.getAttribute('data-cat');
+      page = 1; render();
+    });
+  });
+
+  // Condition labels
+  document.querySelectorAll('.cond-row').forEach((label) => {
+    label.addEventListener('click', () => {
+      const cond = label.getAttribute('data-cond');
+      if (activeConditions.includes(cond)) activeConditions = activeConditions.filter((c) => c !== cond);
+      else activeConditions = [...activeConditions, cond];
+      page = 1; render();
+    });
+  });
+
+  // Search
+  let searchTimer;
+  document.getElementById('cat-search').addEventListener('input', (e) => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => { searchQuery = e.target.value; page = 1; render(); }, 200);
+  });
+
+  // Clear all
+  document.getElementById('clear-filters').addEventListener('click', () => {
+    activeCat = 'All categories'; activeConditions = []; searchQuery = '';
+    document.getElementById('cat-search').value = '';
+    page = 1; render();
+  });
+
+  // Facet toggles
+  document.getElementById('cat-facet-toggle')?.addEventListener('click', () => {
+    catFacetOpen = !catFacetOpen;
+    document.getElementById('cat-facet-body').style.display = catFacetOpen ? 'flex' : 'none';
+    document.getElementById('cat-chevron').textContent = catFacetOpen ? '▾' : '▸';
+  });
+  document.getElementById('cond-facet-toggle')?.addEventListener('click', () => {
+    condFacetOpen = !condFacetOpen;
+    document.getElementById('cond-facet-body').style.display = condFacetOpen ? 'flex' : 'none';
+    document.getElementById('cond-chevron').textContent = condFacetOpen ? '▾' : '▸';
+  });
+
+  // Mobile filter toggle
+  document.getElementById('filter-toggle')?.addEventListener('click', () => {
+    filtersOpen = !filtersOpen;
+    document.getElementById('filter-side').classList.toggle('is-open', filtersOpen);
+  });
+
+  render();
+</script>

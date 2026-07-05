@@ -1,0 +1,181 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { loadProducts } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const products = loadProducts();
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p, allProducts: products } }));
+}
+
+const { product, allProducts } = Astro.props;
+
+const related = allProducts
+  .filter((p) => p.category === product.category && p.slug !== product.slug)
+  .slice(0, 3);
+
+const hasGallery = product.gallery.length > 0;
+const isCarousel = product.gallery.length >= 2;
+const hasSpecs = product.specs.length > 0;
+---
+<Base title={product.name} description={product.shortDesc}>
+  <Nav active="catalog" />
+
+  <div class="pad" style="padding-top:28px;padding-bottom:64px">
+    <!-- Breadcrumb -->
+    <div style="font:500 13px Barlow;color:#6b7780;margin-bottom:24px">
+      <a href="/catalog" style="color:#6b7780;text-decoration:none">Catalog</a>
+      <span style="color:#c2cad0"> / </span>
+      <a href={`/catalog?category=${encodeURIComponent(product.category)}`} style="color:#374754;text-decoration:none">{product.category}</a>
+      <span style="color:#c2cad0"> / </span>
+      <span style="color:#374754">{product.name}</span>
+    </div>
+
+    <div class="prod-grid">
+      <!-- Gallery -->
+      <div>
+        <div id="gallery-main" style="position:relative;height:420px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#eef1f3 0 16px,#e7ebee 16px 32px)">
+          {hasGallery ? (
+            product.gallery.map((img, i) => (
+              <img
+                src={img.src}
+                alt={img.label ?? product.name}
+                data-gallery-img={i}
+                style={`width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:opacity .25s;opacity:${i === 0 ? 1 : 0}`}
+              />
+            ))
+          ) : (
+            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 13px ui-monospace,monospace;letter-spacing:.06em">NO IMAGE</div>
+          )}
+          {isCarousel && (
+            <>
+              <button id="gal-prev" aria-label="Previous image" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);color:#374754;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12);border:none;z-index:2">‹</button>
+              <button id="gal-next" aria-label="Next image" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.92);color:#374754;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12);border:none;z-index:2">›</button>
+              <div id="gal-dots" style="position:absolute;bottom:14px;left:0;right:0;display:flex;gap:7px;justify-content:center;z-index:2">
+                {product.gallery.map((_, i) => (
+                  <button data-dot={i} aria-label={`Image ${i + 1}`} style={`width:8px;height:8px;border-radius:50%;border:none;cursor:pointer;padding:0;background:${i === 0 ? '#FD843B' : 'rgba(255,255,255,.6)'}`}></button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        {isCarousel && (
+          <div id="thumbnails" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px">
+            {product.gallery.map((img, i) => (
+              <button
+                data-thumb={i}
+                aria-label={`Thumbnail ${i + 1}`}
+                style={`height:72px;border-radius:9px;overflow:hidden;cursor:pointer;border:${i === 0 ? '2px solid #FD843B' : '2px solid transparent'};padding:0;background:repeating-linear-gradient(135deg,#eef1f3 0 8px,#e7ebee 8px 16px)`}
+              >
+                <img src={img.src} alt={img.label ?? product.name} style="width:100%;height:100%;object-fit:cover" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- Info -->
+      <div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+          <span style="background:#eef1f3;color:#374754;font:600 12px Barlow;padding:4px 11px;border-radius:20px">{product.category}</span>
+          <span style="background:#FD843B;color:#fff;font:600 12px Barlow;padding:4px 11px;border-radius:20px">{product.condition}</span>
+        </div>
+        <h1 style="font:800 32px/1.1 Archivo;color:#374754;letter-spacing:-.02em;margin:0 0 8px">{product.name}</h1>
+        <div style="font:500 13px Barlow;color:#9aa6ae;margin-bottom:18px">Part ref: {product.sku}</div>
+        <p style="font:400 16px/1.65 Barlow;color:#5c6770;margin:0 0 24px">{product.shortDesc}</p>
+
+        <!-- Contact box -->
+        <div style="background:#f7f9fa;border:1px solid #eef1f3;border-radius:14px;padding:22px;margin-bottom:22px">
+          <div style="font:600 11px Barlow;letter-spacing:.14em;text-transform:uppercase;color:#9aa6ae;margin-bottom:8px">Call or email to order</div>
+          <a href="tel:01234567890" style="display:block;text-decoration:none;font:800 24px Archivo;color:#374754;letter-spacing:-.01em">0123 456 7890</a>
+          <a href="mailto:parts@asautoparts.co.uk" style="display:inline-block;text-decoration:none;font:600 14px Barlow;color:#FD843B;margin-top:2px">parts@asautoparts.co.uk</a>
+          <div style="height:1px;background:#e3e8eb;margin:18px 0"></div>
+          <div style="font:600 13px Barlow;color:#374754;margin-bottom:4px">Interested in this part?</div>
+          <div style="font:400 14px/1.5 Barlow;color:#6b7780;margin-bottom:16px">Send us your vehicle's make and model and we'll confirm fit, condition and price.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <a href="/contact" style="background:#FD843B;color:#fff;padding:13px 24px;border-radius:9px;font:600 15px Barlow;text-decoration:none">Request a quote</a>
+            <a href="/contact" style="border:1.5px solid #d8dee3;color:#374754;padding:13px 24px;border-radius:9px;font:600 15px Barlow;text-decoration:none">Ask a question</a>
+          </div>
+        </div>
+
+        <!-- Specs -->
+        {hasSpecs && (
+          <div>
+            <div style="font:700 16px Archivo;color:#374754;margin:6px 0 10px">Specifications</div>
+            <div style="border:1px solid #eef1f3;border-radius:12px;overflow:hidden">
+              {product.specs.map((s, i) => (
+                <div style={`display:flex;justify-content:space-between;gap:16px;padding:12px 16px;font:400 14px Barlow;${i < product.specs.length - 1 ? 'border-bottom:1px solid #f1f4f6' : ''}`}>
+                  <span style="color:#6b7780">{s.label}</span>
+                  <span style="color:#374754;font-weight:600;text-align:right">{s.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <!-- Description + Fits -->
+    <div class="two-col" style="margin-top:44px">
+      <div>
+        <h2 style="font:700 20px Archivo;color:#374754;margin:0 0 12px">Description</h2>
+        <p style="font:400 16px/1.7 Barlow;color:#5c6770;margin:0;white-space:pre-line">{product.description}</p>
+      </div>
+      {product.compatibility.length > 0 && (
+        <div>
+          <h2 style="font:700 20px Archivo;color:#374754;margin:0 0 12px">Fits</h2>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px">
+            {product.compatibility.map((c) => (
+              <li style="display:flex;align-items:flex-start;gap:9px;font:400 15px/1.5 Barlow;color:#374754">
+                <span style="color:#FD843B;font-weight:700;flex:none;margin-top:1px">✓</span>{c}
+              </li>
+            ))}
+          </ul>
+          <div style="margin-top:14px;font:400 13px Barlow;color:#9aa6ae">Not sure if it fits? <a href="/contact" style="color:#FD843B">Send us your make &amp; model</a>.</div>
+        </div>
+      )}
+    </div>
+
+    <!-- Related -->
+    {related.length > 0 && (
+      <div style="margin-top:56px">
+        <h2 style="font:800 24px Archivo;color:#374754;letter-spacing:-.01em;margin:0 0 20px">More in {product.category}</h2>
+        <div class="cards">
+          {related.map((p) => <ProductCard product={p} imgHeight={150} />)}
+        </div>
+      </div>
+    )}
+  </div>
+
+  <Footer />
+</Base>
+
+{isCarousel && (
+  <script define:vars={{ galleryCount: product.gallery.length }}>
+    let idx = 0;
+
+    function goTo(i) {
+      idx = (i + galleryCount) % galleryCount;
+      document.querySelectorAll('[data-gallery-img]').forEach((img) => {
+        img.style.opacity = +img.getAttribute('data-gallery-img') === idx ? '1' : '0';
+      });
+      document.querySelectorAll('[data-dot]').forEach((dot) => {
+        dot.style.background = +dot.getAttribute('data-dot') === idx ? '#FD843B' : 'rgba(255,255,255,.6)';
+      });
+      document.querySelectorAll('[data-thumb]').forEach((btn) => {
+        btn.style.border = +btn.getAttribute('data-thumb') === idx ? '2px solid #FD843B' : '2px solid transparent';
+      });
+    }
+
+    document.getElementById('gal-prev')?.addEventListener('click', () => goTo(idx - 1));
+    document.getElementById('gal-next')?.addEventListener('click', () => goTo(idx + 1));
+    document.querySelectorAll('[data-dot]').forEach((btn) => {
+      btn.addEventListener('click', () => goTo(+btn.getAttribute('data-dot')));
+    });
+    document.querySelectorAll('[data-thumb]').forEach((btn) => {
+      btn.addEventListener('click', () => goTo(+btn.getAttribute('data-thumb')));
+    });
+  </script>
+)}

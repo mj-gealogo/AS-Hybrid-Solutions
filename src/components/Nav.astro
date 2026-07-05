@@ -1,0 +1,23 @@
+---
+interface Props {
+  active?: 'home' | 'catalog' | 'contact';
+}
+const { active } = Astro.props;
+const col = (page: string) => active === page ? '#374754' : '#6b7780';
+---
+<nav class="pad nav-inner" style="position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:14px;padding-bottom:14px;border-bottom:1px solid #eef1f3;background:rgba(255,255,255,.94);backdrop-filter:blur(8px)">
+  <a href="/" style="display:flex;align-items:center;gap:11px;text-decoration:none">
+    <div style="width:34px;height:38px;background:#374754;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border-left:3px solid #FD843B;flex:none"></div>
+    <div style="line-height:1">
+      <div style="font:800 16px Archivo;color:#374754;letter-spacing:-.01em">A&amp;S</div>
+      <div style="font:600 8px Barlow;letter-spacing:.22em;color:#FD843B;margin-top:2px">AUTO PARTS</div>
+    </div>
+  </a>
+  <div class="nav-links" style="display:flex;align-items:center;gap:26px;font:500 14px Barlow">
+    <a href="/" style={`text-decoration:none;color:${col('home')}`}>Home</a>
+    <a href="/catalog" style={`text-decoration:none;color:${col('catalog')}`}>Catalog</a>
+    <a href="/contact" style={`text-decoration:none;color:${col('contact')}`}>Contact</a>
+    <a href="/admin/" class="hide-xs" style="text-decoration:none;color:#9aa6ae;font-size:12.5px;display:flex;align-items:center;gap:5px">● Admin</a>
+    <a href="/contact" style="background:#FD843B;color:#fff;padding:10px 18px;border-radius:7px;font-weight:600;text-decoration:none;white-space:nowrap">Request a quote</a>
+  </div>
+</nav>

@@ -1,0 +1,79 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = 'A&S Auto Parts', description = 'Quality car parts — lights, batteries, ABS pumps, engines, gearboxes and suspension.' } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title === 'A&S Auto Parts' ? title : `${title} | A&S Auto Parts`}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: Barlow, system-ui, sans-serif; color: #374754; background: #fff; }
+    ::selection { background: #FD843B; color: #fff; }
+    a { color: inherit; }
+    input, textarea, select { font-family: Barlow, system-ui, sans-serif; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #FD843B !important; }
+
+    /* layout helpers */
+    .pad { padding-left: 5vw; padding-right: 5vw; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+    .hero-grid { display: grid; grid-template-columns: 1.22fr 1.2fr .5fr; gap: 36px; align-items: start; }
+    .prod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .two-col { display: grid; grid-template-columns: 1.4fr 1fr; gap: 36px; align-items: start; }
+    .foot-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 36px; }
+    .cat-grid { display: grid; grid-template-columns: 248px 1fr; gap: 34px; align-items: start; }
+    .filter-side { position: sticky; top: 82px; }
+    .filter-toggle { display: none !important; }
+
+    /* card hover */
+    .product-card { border: 1px solid #eef1f3; border-radius: 14px; overflow: hidden; cursor: pointer; background: #fff; display: flex; flex-direction: column; transition: border-color .15s, box-shadow .15s; text-decoration: none; color: inherit; }
+    .product-card:hover { border-color: #FD843B; box-shadow: 0 8px 24px rgba(55,71,84,.08); }
+
+    /* img placeholder */
+    .img-placeholder { background: repeating-linear-gradient(135deg, #eef1f3 0 12px, #e7ebee 12px 24px); display: flex; align-items: center; justify-content: center; color: #9aa6ae; font: 500 11px ui-monospace, monospace; letter-spacing: .05em; }
+
+    /* pager */
+    .pager { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 34px; }
+    .pager-btn { min-width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font: 600 14px Barlow; cursor: pointer; border: 1.5px solid #d8dee3; color: #374754; transition: background .12s, color .12s; user-select: none; }
+    .pager-btn:hover:not(.pager-btn--active):not(.pager-btn--disabled) { background: #f7f9fa; }
+    .pager-btn--active { background: #374754; color: #fff; border-color: #374754; }
+    .pager-btn--disabled { opacity: .35; cursor: default; pointer-events: none; }
+
+    /* chip */
+    .chip { padding: 8px 16px; border-radius: 30px; font: 600 13px Barlow; cursor: pointer; border: 1.5px solid #d8dee3; color: #374754; white-space: nowrap; transition: background .12s, color .12s, border-color .12s; }
+    .chip--active { background: #374754; color: #fff; border-color: #374754; }
+
+    /* responsive */
+    @media (max-width: 1080px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 34px; }
+      .hero-contact { align-items: flex-start !important; text-align: left !important; }
+    }
+    @media (max-width: 900px) {
+      .prod-grid, .two-col, .foot-grid { grid-template-columns: 1fr; gap: 32px; }
+      .cat-grid { grid-template-columns: 1fr; gap: 18px; }
+      .filter-side { position: static; display: none; border: 1px solid #eef1f3; border-radius: 14px; padding: 18px; }
+      .filter-side.is-open { display: block; }
+      .filter-toggle { display: inline-flex !important; }
+    }
+    @media (max-width: 640px) {
+      .nav-inner { flex-wrap: wrap; row-gap: 12px; }
+      .nav-links { gap: 16px !important; font-size: 13px !important; flex-wrap: wrap; justify-content: flex-end; row-gap: 10px; }
+      .hide-xs { display: none !important; }
+      .pad { padding-left: 6vw !important; padding-right: 6vw !important; }
+    }
+  </style>
+</head>
+<body>
+  <slot />
+</body>
+</html>

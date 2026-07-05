@@ -1,0 +1,143 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+<Base title="Contact" description="Get in touch to request a quote or ask about a part.">
+  <Nav active="contact" />
+
+  <div class="pad" style="padding-top:48px;padding-bottom:64px">
+    <div style="max-width:560px">
+      <h1 style="font:800 36px Archivo;color:#374754;letter-spacing:-.02em;margin:0">Get in touch</h1>
+      <p style="font:400 17px/1.6 Barlow;color:#5c6770;margin:12px 0 0">Tell us the part you need and your vehicle's make and model — we'll confirm fit and send a price. We aim to reply the same working day.</p>
+    </div>
+
+    <div class="two-col" style="margin-top:36px">
+      <!-- Form -->
+      <div style="background:#fff;border:1px solid #eef1f3;border-radius:16px;padding:28px">
+
+        <!-- Success state (hidden by default) -->
+        <div id="form-success" style="display:none;text-align:center;padding:40px 16px">
+          <div style="width:56px;height:56px;border-radius:50%;background:#FD843B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px">✓</div>
+          <div style="font:800 22px Archivo;color:#374754">Enquiry sent</div>
+          <div style="font:400 15px Barlow;color:#6b7780;margin-top:8px">Thanks — we'll be in touch shortly.</div>
+          <button id="send-another" style="display:inline-block;margin-top:20px;color:#FD843B;font:600 14px Barlow;cursor:pointer;background:none;border:none;padding:0">Send another →</button>
+        </div>
+
+        <!-- Error state (hidden by default) -->
+        <div id="form-error" style="display:none;background:#fff5f5;border:1px solid #f0d4d4;border-radius:10px;padding:14px 18px;margin-bottom:18px;font:400 14px Barlow;color:#c0392b">
+          Something went wrong. Please try again or call us directly.
+        </div>
+
+        <!-- Form fields -->
+        <form id="enquiry-form" novalidate>
+          <!-- Honeypot -->
+          <input name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div>
+              <label style="display:block;font:600 13px Barlow;color:#374754;margin-bottom:6px" for="f-name">Full name</label>
+              <input id="f-name" name="name" required placeholder="Jane Smith" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754" />
+            </div>
+            <div>
+              <label style="display:block;font:600 13px Barlow;color:#374754;margin-bottom:6px" for="f-phone">Phone</label>
+              <input id="f-phone" name="phone" placeholder="07000 000000" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754" />
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <label style="display:block;font:600 13px Barlow;color:#374754;margin-bottom:6px" for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" required placeholder="jane@email.com" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754" />
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+            <div>
+              <label style="display:block;font:600 13px Barlow;color:#374754;margin-bottom:6px" for="f-vehicle">Vehicle make &amp; model</label>
+              <input id="f-vehicle" name="vehicle" placeholder="e.g. VW Golf 2015" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754" />
+            </div>
+            <div>
+              <label style="display:block;font:600 13px Barlow;color:#374754;margin-bottom:6px" for="f-part">Part needed</label>
+              <input id="f-part" name="part" placeholder="e.g. ABS pump" style="width:100%;height:46px;border:1.5px solid #d8dee3;border-radius:9px;padding:0 13px;font:400 15px Barlow;color:#374754" />
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <label style="display:block;font:600 13px Barlow;color:#374754;margin-bottom:6px" for="f-message">Message</label>
+            <textarea id="f-message" name="message" placeholder="Tell us a bit more…" style="width:100%;height:110px;border:1.5px solid #d8dee3;border-radius:9px;padding:11px 13px;font:400 15px Barlow;color:#374754;resize:vertical"></textarea>
+          </div>
+          <button type="submit" id="submit-btn" style="margin-top:18px;background:#FD843B;color:#fff;width:100%;height:50px;border-radius:9px;display:flex;align-items:center;justify-content:center;font:600 16px Barlow;cursor:pointer;border:none">Send enquiry</button>
+          <div style="font:400 12px Barlow;color:#9aa6ae;margin-top:10px;text-align:center">We'll only use your details to answer your enquiry.</div>
+        </form>
+      </div>
+
+      <!-- Details -->
+      <div>
+        <div style="background:#374754;border-radius:16px;padding:26px;color:#fff">
+          <div style="font:700 17px Archivo;margin-bottom:16px">Contact details</div>
+          <div style="display:flex;flex-direction:column;gap:16px;font:400 15px Barlow">
+            <div>
+              <div style="color:#9aa6ae;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">Phone</div>
+              <a href="tel:01234567890" style="color:#fff;text-decoration:none">0123 456 7890</a>
+            </div>
+            <div>
+              <div style="color:#9aa6ae;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">Email</div>
+              <a href="mailto:parts@asautoparts.co.uk" style="color:#FD843B;text-decoration:none">parts@asautoparts.co.uk</a>
+            </div>
+            <div>
+              <div style="color:#9aa6ae;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">Address</div>
+              Unit 5, Example Industrial Estate,<br>Townsville, TS1 2AB
+            </div>
+            <div>
+              <div style="color:#9aa6ae;font-size:12px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px">Opening hours</div>
+              Mon–Fri 8:00–18:00<br>Sat 9:00–16:00 · Sun closed
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Footer />
+</Base>
+
+<script>
+  const form = document.getElementById('enquiry-form') as HTMLFormElement;
+  const successEl = document.getElementById('form-success')!;
+  const errorEl = document.getElementById('form-error')!;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    if ((form.elements.namedItem('_gotcha') as HTMLInputElement)?.value) return; // honeypot
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    errorEl.style.display = 'none';
+
+    const data = new FormData(form);
+
+    try {
+      // Replace with your Web3Forms access key
+      data.append('access_key', 'YOUR_WEB3FORMS_KEY');
+      data.append('subject', 'New enquiry from A&S Auto Parts website');
+      const res = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: data });
+      const json = await res.json();
+      if (json.success) {
+        form.style.display = 'none';
+        successEl.style.display = 'block';
+      } else {
+        throw new Error(json.message);
+      }
+    } catch {
+      errorEl.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send enquiry';
+    }
+  });
+
+  document.getElementById('send-another')?.addEventListener('click', () => {
+    form.reset();
+    form.style.display = 'block';
+    successEl.style.display = 'none';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send enquiry';
+  });
+</script>

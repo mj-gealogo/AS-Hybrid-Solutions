@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+</style>
+</helmet>
+
+<div style="position:absolute;left:80px;top:32px;font:700 26px Archivo,system-ui;color:#374754;letter-spacing:-.01em">A&amp;S Auto Parts — Homepage directions</div>
+<div style="position:absolute;left:80px;top:70px;font:400 14px Barlow,system-ui;color:#6b7780">Three visual routes. Pan / zoom to inspect. Tell me which one to build the full site around (or mix elements).</div>
+
+<!-- ============ DIRECTION A : CLEAN PROFESSIONAL ============ -->
+<div style="position:absolute;left:80px;top:150px;width:1180px">
+  <div data-drags-parent="1" style="position:absolute;top:-30px;font:600 13px Barlow,system-ui;color:#374754">A · Clean &amp; Professional</div>
+  <div style="position:absolute;top:-30px;left:170px;font:400 12px Barlow,system-ui;color:#9aa6ae">Lots of white, calm, trustworthy · Archivo + Barlow</div>
+  <div style="background:#fff;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.10);overflow:hidden;font-family:Barlow,system-ui">
+
+    <!-- nav -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 36px;border-bottom:1px solid #eef1f3">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:38px;height:42px;background:#374754;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);display:flex;align-items:center;justify-content:center;color:#fff;font:800 14px Archivo;border-left:3px solid #FD843B"></div>
+        <div style="line-height:1"><div style="font:800 17px Archivo;color:#374754;letter-spacing:-.01em">A&amp;S</div><div style="font:600 9px Barlow;letter-spacing:.22em;color:#FD843B;margin-top:2px">AUTO PARTS</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:30px;font:500 14px Barlow;color:#374754">
+        <span>Home</span><span style="color:#FD843B">Catalog</span><span>About</span><span>Contact</span>
+        <span style="background:#FD843B;color:#fff;padding:10px 20px;border-radius:6px;font-weight:600">Request a quote</span>
+      </div>
+    </div>
+
+    <!-- hero -->
+    <div style="display:grid;grid-template-columns:1.05fr 1fr;gap:44px;padding:60px 36px 56px;align-items:center">
+      <div>
+        <div style="font:600 12px Barlow;letter-spacing:.18em;color:#FD843B;margin-bottom:18px">GENUINE &amp; QUALITY AFTERMARKET</div>
+        <div style="font:800 52px/1.04 Archivo;color:#374754;letter-spacing:-.02em">The right part,<br>the first time.</div>
+        <p style="font:400 17px/1.6 Barlow;color:#5c6770;margin:20px 0 28px;max-width:440px">Lights, batteries, ABS pumps, engines, gearboxes and suspension — checked, sorted and ready to dispatch. Find it, then send us the part for a fast price.</p>
+        <div style="display:flex;gap:10px;max-width:460px">
+          <div style="flex:1;display:flex;align-items:center;gap:10px;border:1.5px solid #d8dee3;border-radius:8px;padding:0 14px;height:50px;color:#9aa6ae;font:400 15px Barlow">Search part name or number…</div>
+          <div style="background:#374754;color:#fff;padding:0 22px;height:50px;display:flex;align-items:center;border-radius:8px;font-weight:600;font-size:15px">Search</div>
+        </div>
+        <div style="display:flex;gap:24px;margin-top:24px;font:500 13px Barlow;color:#6b7780">
+          <span>✓ Same-day dispatch</span><span>✓ Quality checked</span><span>✓ Expert support</span>
+        </div>
+      </div>
+      <div style="height:360px;border-radius:12px;background:repeating-linear-gradient(135deg,#eef1f3 0 14px,#e7ebee 14px 28px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 12px ui-monospace,monospace;letter-spacing:.05em">HERO IMAGE · warehouse / parts</div>
+    </div>
+
+    <!-- categories -->
+    <div style="padding:8px 36px 56px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px">
+        <div><div style="font:800 28px Archivo;color:#374754;letter-spacing:-.01em">Shop by category</div><div style="font:400 15px Barlow;color:#6b7780;margin-top:4px">Six core ranges, thousands of parts.</div></div>
+        <span style="font:600 14px Barlow;color:#FD843B">View full catalog →</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+        <!-- card -->
+        <div style="border:1px solid #eef1f3;border-radius:12px;overflow:hidden">
+          <div style="height:130px;background:repeating-linear-gradient(135deg,#eef1f3 0 12px,#e7ebee 12px 24px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 11px ui-monospace,monospace">LIGHTS</div>
+          <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between"><span style="font:600 16px Barlow;color:#374754">Lights</span><span style="color:#FD843B;font-weight:700">→</span></div>
+        </div>
+        <div style="border:1px solid #eef1f3;border-radius:12px;overflow:hidden">
+          <div style="height:130px;background:repeating-linear-gradient(135deg,#eef1f3 0 12px,#e7ebee 12px 24px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 11px ui-monospace,monospace">BATTERIES</div>
+          <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between"><span style="font:600 16px Barlow;color:#374754">Batteries</span><span style="color:#FD843B;font-weight:700">→</span></div>
+        </div>
+        <div style="border:1px solid #eef1f3;border-radius:12px;overflow:hidden">
+          <div style="height:130px;background:repeating-linear-gradient(135deg,#eef1f3 0 12px,#e7ebee 12px 24px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 11px ui-monospace,monospace">ABS PUMPS</div>
+          <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between"><span style="font:600 16px Barlow;color:#374754">ABS Pumps</span><span style="color:#FD843B;font-weight:700">→</span></div>
+        </div>
+        <div style="border:1px solid #eef1f3;border-radius:12px;overflow:hidden">
+          <div style="height:130px;background:repeating-linear-gradient(135deg,#eef1f3 0 12px,#e7ebee 12px 24px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 11px ui-monospace,monospace">ENGINE</div>
+          <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between"><span style="font:600 16px Barlow;color:#374754">Engine</span><span style="color:#FD843B;font-weight:700">→</span></div>
+        </div>
+        <div style="border:1px solid #eef1f3;border-radius:12px;overflow:hidden">
+          <div style="height:130px;background:repeating-linear-gradient(135deg,#eef1f3 0 12px,#e7ebee 12px 24px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 11px ui-monospace,monospace">GEARBOX</div>
+          <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between"><span style="font:600 16px Barlow;color:#374754">Gearbox</span><span style="color:#FD843B;font-weight:700">→</span></div>
+        </div>
+        <div style="border:1px solid #eef1f3;border-radius:12px;overflow:hidden">
+          <div style="height:130px;background:repeating-linear-gradient(135deg,#eef1f3 0 12px,#e7ebee 12px 24px);display:flex;align-items:center;justify-content:center;color:#9aa6ae;font:500 11px ui-monospace,monospace">SUSPENSION</div>
+          <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between"><span style="font:600 16px Barlow;color:#374754">Suspension</span><span style="color:#FD843B;font-weight:700">→</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- contact band -->
+    <div style="margin:0 36px 48px;background:#374754;border-radius:14px;padding:38px 40px;display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font:800 26px Archivo;color:#fff;letter-spacing:-.01em">Can't find your part?</div><div style="font:400 15px Barlow;color:#aeb8bf;margin-top:6px">Send us the reg or part number — we'll source it and quote you back fast.</div></div>
+      <div style="background:#FD843B;color:#fff;padding:14px 26px;border-radius:8px;font:600 16px Barlow;white-space:nowrap">Contact us</div>
+    </div>
+
+    <!-- footer -->
+    <div style="background:#2d3a45;padding:30px 36px;display:flex;align-items:center;justify-content:space-between;color:#8e9aa3;font:400 13px Barlow">
+      <span style="color:#fff;font:800 15px Archivo">A&amp;S AUTO PARTS</span>
+      <span>Home · Catalog · About · Contact</span>
+      <span>© 2026 A&amp;S Auto Parts</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DIRECTION B : BOLD INDUSTRIAL ============ -->
+<div style="position:absolute;left:1340px;top:150px;width:1180px">
+  <div data-drags-parent="1" style="position:absolute;top:-30px;font:600 13px Barlow,system-ui;color:#374754">B · Bold &amp; Industrial</div>
+  <div style="position:absolute;top:-30px;left:170px;font:400 12px Barlow,system-ui;color:#9aa6ae">Dark, high-contrast, mechanical · Oswald uppercase + Barlow</div>
+  <div style="background:#fff;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.10);overflow:hidden;font-family:Barlow,system-ui">
+
+    <!-- nav dark -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 36px;background:#374754">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:36px;height:40px;background:#FD843B;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)"></div>
+        <div style="font:700 18px Oswald;color:#fff;letter-spacing:.04em">A&amp;S <span style="color:#FD843B">AUTO PARTS</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:28px;font:500 13px Oswald;letter-spacing:.08em;color:#cdd5db;text-transform:uppercase">
+        <span style="color:#fff">Home</span><span>Catalog</span><span>About</span><span>Contact</span>
+        <span style="background:#FD843B;color:#fff;padding:10px 18px;font-weight:600">GET A QUOTE</span>
+      </div>
+    </div>
+
+    <!-- hero dark full bleed -->
+    <div style="position:relative;background:#2d3a45;overflow:hidden;padding:70px 36px 76px">
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,#323f4a 0 12px,#2d3a45 12px 24px);opacity:.6"></div>
+      <div style="position:absolute;right:-60px;top:0;bottom:0;width:46%;background:repeating-linear-gradient(135deg,#3a4753 0 14px,#34414c 14px 28px);clip-path:polygon(22% 0,100% 0,100% 100%,0 100%);display:flex;align-items:center;justify-content:center;color:#5e6e7a;font:500 12px ui-monospace,monospace">HERO · engine / parts</div>
+      <div style="position:relative;max-width:560px">
+        <div style="font:600 13px Oswald;letter-spacing:.22em;color:#FD843B;text-transform:uppercase">Your motor's lifeline</div>
+        <div style="font:700 60px/.98 Oswald;color:#fff;text-transform:uppercase;letter-spacing:.01em;margin:16px 0 0">Parts that<br><span style="color:#FD843B">keep you</span> moving</div>
+        <p style="font:400 16px/1.6 Barlow;color:#b9c2c9;margin:22px 0 28px;max-width:430px">Lights · Batteries · ABS Pumps · Engines · Gearboxes · Suspension. Stripped, tested, ready to go.</p>
+        <div style="display:flex;gap:0;max-width:480px;border:2px solid #FD843B">
+          <div style="flex:1;background:#fff;display:flex;align-items:center;padding:0 16px;height:52px;color:#9aa6ae;font:400 15px Barlow">Part number, name or vehicle…</div>
+          <div style="background:#FD843B;color:#fff;padding:0 24px;height:52px;display:flex;align-items:center;font:600 13px Oswald;letter-spacing:.1em">SEARCH</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- categories dark grid -->
+    <div style="background:#374754;padding:48px 36px">
+      <div style="font:700 30px Oswald;color:#fff;text-transform:uppercase;letter-spacing:.02em;margin-bottom:6px">Browse the range</div>
+      <div style="font:400 14px Barlow;color:#9aa6ae;margin-bottom:26px">Six departments. Tap a category to drill in.</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+        <div style="position:relative;height:140px;background:#2d3a45;border:1px solid #44525d;display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px;overflow:hidden"><span style="font:600 12px Oswald;color:#FD843B;letter-spacing:.1em">01</span><span style="font:600 19px Oswald;color:#fff;text-transform:uppercase">Lights</span><div style="position:absolute;right:-20px;bottom:-20px;width:90px;height:90px;background:repeating-linear-gradient(135deg,#3a4753 0 8px,#34414c 8px 16px);border-radius:50%"></div></div>
+        <div style="position:relative;height:140px;background:#2d3a45;border:1px solid #44525d;display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px;overflow:hidden"><span style="font:600 12px Oswald;color:#FD843B;letter-spacing:.1em">02</span><span style="font:600 19px Oswald;color:#fff;text-transform:uppercase">Batteries</span><div style="position:absolute;right:-20px;bottom:-20px;width:90px;height:90px;background:repeating-linear-gradient(135deg,#3a4753 0 8px,#34414c 8px 16px);border-radius:50%"></div></div>
+        <div style="position:relative;height:140px;background:#2d3a45;border:1px solid #44525d;display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px;overflow:hidden"><span style="font:600 12px Oswald;color:#FD843B;letter-spacing:.1em">03</span><span style="font:600 19px Oswald;color:#fff;text-transform:uppercase">ABS Pumps</span><div style="position:absolute;right:-20px;bottom:-20px;width:90px;height:90px;background:repeating-linear-gradient(135deg,#3a4753 0 8px,#34414c 8px 16px);border-radius:50%"></div></div>
+        <div style="position:relative;height:140px;background:#2d3a45;border:1px solid #44525d;display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px;overflow:hidden"><span style="font:600 12px Oswald;color:#FD843B;letter-spacing:.1em">04</span><span style="font:600 19px Oswald;color:#fff;text-transform:uppercase">Engine</span><div style="position:absolute;right:-20px;bottom:-20px;width:90px;height:90px;background:repeating-linear-gradient(135deg,#3a4753 0 8px,#34414c 8px 16px);border-radius:50%"></div></div>
+        <div style="position:relative;height:140px;background:#2d3a45;border:1px solid #44525d;display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px;overflow:hidden"><span style="font:600 12px Oswald;color:#FD843B;letter-spacing:.1em">05</span><span style="font:600 19px Oswald;color:#fff;text-transform:uppercase">Gearbox</span><div style="position:absolute;right:-20px;bottom:-20px;width:90px;height:90px;background:repeating-linear-gradient(135deg,#3a4753 0 8px,#34414c 8px 16px);border-radius:50%"></div></div>
+        <div style="position:relative;height:140px;background:#2d3a45;border:1px solid #44525d;display:flex;flex-direction:column;justify-content:space-between;padding:16px 18px;overflow:hidden"><span style="font:600 12px Oswald;color:#FD843B;letter-spacing:.1em">06</span><span style="font:600 19px Oswald;color:#fff;text-transform:uppercase">Suspension</span><div style="position:absolute;right:-20px;bottom:-20px;width:90px;height:90px;background:repeating-linear-gradient(135deg,#3a4753 0 8px,#34414c 8px 16px);border-radius:50%"></div></div>
+      </div>
+    </div>
+
+    <!-- trust strip -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);background:#FD843B">
+      <div style="padding:26px 28px;border-right:1px solid rgba(255,255,255,.25)"><div style="font:700 20px Oswald;color:#fff;text-transform:uppercase">Fast dispatch</div><div style="font:400 13px Barlow;color:#fff;opacity:.85">Same-day on stocked parts</div></div>
+      <div style="padding:26px 28px;border-right:1px solid rgba(255,255,255,.25)"><div style="font:700 20px Oswald;color:#fff;text-transform:uppercase">Tested &amp; graded</div><div style="font:400 13px Barlow;color:#fff;opacity:.85">Every part quality checked</div></div>
+      <div style="padding:26px 28px"><div style="font:700 20px Oswald;color:#fff;text-transform:uppercase">Real people</div><div style="font:400 13px Barlow;color:#fff;opacity:.85">Talk to a parts expert</div></div>
+    </div>
+
+    <!-- footer -->
+    <div style="background:#2d3a45;padding:30px 36px;display:flex;align-items:center;justify-content:space-between;color:#8e9aa3;font:400 13px Barlow">
+      <span style="color:#fff;font:700 16px Oswald;letter-spacing:.04em">A&amp;S AUTO PARTS</span>
+      <span style="text-transform:uppercase;letter-spacing:.08em;font:500 12px Oswald">Home · Catalog · About · Contact</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ DIRECTION C : PREMIUM PERFORMANCE ============ -->
+<div style="position:absolute;left:2600px;top:150px;width:1180px">
+  <div data-drags-parent="1" style="position:absolute;top:-30px;font:600 13px Barlow,system-ui;color:#374754">C · Premium &amp; Editorial</div>
+  <div style="position:absolute;top:-30px;left:170px;font:400 12px Barlow,system-ui;color:#9aa6ae">Sleek, spacious, image-led · Space Grotesk + Barlow</div>
+  <div style="background:#fbfaf9;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.10);overflow:hidden;font-family:Barlow,system-ui">
+
+    <!-- nav -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 40px;background:#fbfaf9">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:34px;height:38px;background:#374754;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);border-left:3px solid #FD843B"></div>
+        <div style="font:600 18px 'Space Grotesk';color:#374754;letter-spacing:-.01em">A&amp;S <span style="color:#9aa6ae;font-weight:400">Auto Parts</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:30px;font:500 14px Barlow;color:#374754">
+        <span>Home</span><span>Catalog</span><span>About</span><span>Contact</span>
+        <span style="border:1.5px solid #374754;color:#374754;padding:9px 20px;border-radius:30px;font-weight:600">Request a quote</span>
+      </div>
+    </div>
+
+    <!-- hero image-led -->
+    <div style="position:relative;margin:0 40px 56px;border-radius:20px;overflow:hidden;height:440px;background:repeating-linear-gradient(135deg,#e7ebee 0 16px,#dfe4e8 16px 32px);display:flex;align-items:flex-end">
+      <div style="position:absolute;top:50%;left:24px;transform:translateY(-50%);color:#aab4bb;font:500 12px ui-monospace,monospace;writing-mode:vertical-rl">FULL-BLEED HERO · hero car / parts flat-lay</div>
+      <div style="margin:34px;background:#fff;border-radius:16px;padding:36px 40px;max-width:520px;box-shadow:0 18px 40px rgba(45,58,69,.18)">
+        <div style="font:500 12px Barlow;letter-spacing:.16em;color:#FD843B;text-transform:uppercase">Genuine · Aftermarket · Reclaimed</div>
+        <div style="font:600 42px/1.05 'Space Grotesk';color:#374754;letter-spacing:-.02em;margin:14px 0 0">Parts worth<br>fitting.</div>
+        <p style="font:400 16px/1.6 Barlow;color:#5c6770;margin:16px 0 24px">From headlights to gearboxes — sourced, inspected and ready. Tell us what you need and we'll price it up.</p>
+        <div style="display:flex;gap:12px;align-items:center">
+          <span style="background:#FD843B;color:#fff;padding:13px 26px;border-radius:30px;font:600 15px Barlow">Browse catalog</span>
+          <span style="color:#374754;font:600 15px Barlow;text-decoration:underline;text-underline-offset:4px">or get a quote →</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- categories editorial 2-up -->
+    <div style="padding:0 40px 56px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:26px">
+        <div style="font:600 30px 'Space Grotesk';color:#374754;letter-spacing:-.01em">Explore the range</div>
+        <span style="font:500 14px Barlow;color:#FD843B">All categories →</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div style="position:relative;height:200px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#e7ebee 0 14px,#dfe4e8 14px 28px);display:flex;align-items:flex-end;padding:22px"><span style="font:600 22px 'Space Grotesk';color:#374754">Lights</span></div>
+        <div style="position:relative;height:200px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#e7ebee 0 14px,#dfe4e8 14px 28px);display:flex;align-items:flex-end;padding:22px"><span style="font:600 22px 'Space Grotesk';color:#374754">Engine</span></div>
+        <div style="position:relative;height:150px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#e7ebee 0 14px,#dfe4e8 14px 28px);display:flex;align-items:flex-end;padding:20px"><span style="font:600 19px 'Space Grotesk';color:#374754">Batteries</span></div>
+        <div style="position:relative;height:150px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#e7ebee 0 14px,#dfe4e8 14px 28px);display:flex;align-items:flex-end;padding:20px"><span style="font:600 19px 'Space Grotesk';color:#374754">ABS Pumps</span></div>
+        <div style="position:relative;height:150px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#e7ebee 0 14px,#dfe4e8 14px 28px);display:flex;align-items:flex-end;padding:20px"><span style="font:600 19px 'Space Grotesk';color:#374754">Gearbox</span></div>
+        <div style="position:relative;height:150px;border-radius:16px;overflow:hidden;background:repeating-linear-gradient(135deg,#e7ebee 0 14px,#dfe4e8 14px 28px);display:flex;align-items:flex-end;padding:20px"><span style="font:600 19px 'Space Grotesk';color:#374754">Suspension</span></div>
+      </div>
+    </div>
+
+    <!-- contact band -->
+    <div style="margin:0 40px 56px;border-radius:20px;background:#374754;padding:48px;text-align:center">
+      <div style="font:600 32px 'Space Grotesk';color:#fff;letter-spacing:-.01em">Not sure which part fits?</div>
+      <p style="font:400 16px Barlow;color:#aeb8bf;margin:12px auto 24px;max-width:460px">Share your reg or VIN and we'll match the exact part and send you a price.</p>
+      <span style="background:#FD843B;color:#fff;padding:14px 30px;border-radius:30px;font:600 16px Barlow">Get in touch</span>
+    </div>
+
+    <!-- footer -->
+    <div style="background:#2d3a45;padding:34px 40px;display:flex;align-items:center;justify-content:space-between;color:#8e9aa3;font:400 13px Barlow">
+      <span style="color:#fff;font:600 17px 'Space Grotesk'">A&amp;S Auto Parts</span>
+      <span>Home · Catalog · About · Contact</span>
+      <span>© 2026</span>
+    </div>
+  </div>
+</div>
+
+<!-- post-it -->
+<div style="position:absolute;left:80px;top:1640px;width:300px;background:#fef4a8;padding:16px 18px;font:400 13px/1.5 Barlow,system-ui;color:#5b5320;box-shadow:0 1px 3px rgba(0,0,0,.12);transform:rotate(-1deg)">All three are catalog-only (no prices shown) with a clear path to <b>contact / request a quote</b>, plus search + category filtering — exactly your brief. Pick one and I'll build out Home, Catalog, Product detail, Contact + an admin screen.</div>
+</x-dc>
+</body>
+</html>
