@@ -125,25 +125,16 @@ export function createGitHubBackend(token) {
     get repoSlugs() { return repoSlugs; },
 
     async init() {
-      const files = await listDir('content/products');
-      const products = [];
-      for (const f of files) {
-        if (f.type !== 'file' || !f.name.endsWith('.md')) continue;
-        const raw = await readContent(f.path);
-        const { data, body } = parseFrontmatter(raw);
-        products.push({
-          slug: f.name.replace(/\.md$/, ''),
-          id: data.id ?? f.name.replace(/\.md$/, ''),
-          name: data.name ?? '', category: data.category ?? '', condition: data.condition ?? '',
-          sku: data.sku ?? '', shortDesc: data.shortDesc ?? '', description: body,
-          gallery: data.gallery ?? [], specs: data.specs ?? [], compatibility: data.compatibility ?? [],
-        });
+      // Load the pre-built manifest in ONE request (constant time, any catalog
+      // size) instead of one GitHub API call per product. Cache-busting param so
+      // we always get the freshest build after a publish.
+      const res = await fetch(`/admin/data.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (!res.ok) {
+        throw new Error(`Could not load /admin/data.json (${res.status}). Make sure the site has been deployed with this build.`);
       }
-      const settings = await readJson('content/settings.json');
-      const categories = await readJson('content/categories.json');
-      const conditions = await readJson('content/conditions.json');
-      repoSlugs = new Set(products.map((p) => p.slug));
-      return { products, categories, conditions, settings };
+      const data = await res.json();
+      repoSlugs = new Set((data.products || []).map((p) => p.slug));
+      return data;
     },
 
     // Bundle every staged change into ONE commit. Returns the number of changes.
