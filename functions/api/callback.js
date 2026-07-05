@@ -38,7 +38,8 @@ export async function onRequestGet({ request, env }) {
 // Renders a tiny page that posts the result back to the admin window (same origin)
 // and closes itself.
 function page(token, error) {
-  const payload = JSON.stringify({ source: 'as-admin-oauth', token, error });
+  // Escape `<` so nothing in token/error can break out of the inline <script>.
+  const payload = JSON.stringify({ source: 'as-admin-oauth', token, error }).replace(/</g, '\\u003c');
   const body = `<!doctype html><meta charset="utf-8">
 <body style="font:15px/1.5 system-ui;padding:28px;color:#374754">
 <script>

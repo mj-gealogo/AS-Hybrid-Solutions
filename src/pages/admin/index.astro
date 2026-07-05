@@ -155,8 +155,9 @@ const seed = {
     </div>
   </div>
 
-  <!-- Real content baked in at build time — used by local/demo mode. -->
-  <script type="application/json" id="admin-seed" set:html={JSON.stringify(seed)} is:inline></script>
+  <!-- Real content baked in at build time — used by local/demo mode.
+       `<` is escaped so a `</script>` in any product copy can't break out of the tag. -->
+  <script type="application/json" id="admin-seed" set:html={JSON.stringify(seed).replace(/</g, '\\u003c')} is:inline></script>
 
   <!-- Login gate — shown only on the deployed site until the owner signs in. -->
   <div id="login-gate" style="display:none;position:fixed;inset:0;z-index:200;background:#f7f9fa;align-items:center;justify-content:center;padding:24px">
