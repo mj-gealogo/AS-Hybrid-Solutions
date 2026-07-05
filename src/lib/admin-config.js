@@ -6,7 +6,7 @@
 //
 // You only need to edit `owner` and `repo` to match your GitHub repository.
 export const ADMIN_CONFIG = {
-  owner: 'YOUR_GITHUB_USERNAME', // e.g. "mj-gealogo"
-  repo: 'as-hybrid-solutions',   // the GitHub repository name
+  owner: 'mj-gealogo',           // GitHub username
+  repo: 'AS-Hybrid-Solutions',   // the GitHub repository name
   branch: 'main',
 };

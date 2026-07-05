@@ -100,6 +100,18 @@ export function createGitHubBackend(token) {
     shas[path] = j.sha;
     return b64ToUtf8(j.content);
   }
+  // Like readFile but fails loudly when the file is missing — so a wrong
+  // owner/repo surfaces a clear message instead of a silently-empty admin.
+  async function readJson(path) {
+    const raw = await readFile(path);
+    if (raw == null) {
+      throw new Error(
+        `Could not read ${path} from ${owner}/${repo}@${branch}. ` +
+        `Check "owner" and "repo" in src/lib/admin-config.js.`
+      );
+    }
+    return JSON.parse(raw);
+  }
   // contentB64 already base64 (binary) when isBinary; otherwise UTF-8 string.
   async function writeFile(path, content, message, isBinary = false) {
     const body = {
@@ -155,9 +167,9 @@ export function createGitHubBackend(token) {
           gallery: data.gallery ?? [], specs: data.specs ?? [], compatibility: data.compatibility ?? [],
         });
       }
-      const settings = JSON.parse(await readFile('content/settings.json'));
-      const categories = JSON.parse(await readFile('content/categories.json'));
-      const conditions = JSON.parse(await readFile('content/conditions.json'));
+      const settings = await readJson('content/settings.json');
+      const categories = await readJson('content/categories.json');
+      const conditions = await readJson('content/conditions.json');
       return { products, categories, conditions, settings };
     },
     async putProduct(p) {
