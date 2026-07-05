@@ -178,10 +178,24 @@ output directory `dist`. It redeploys on every push and gives you a free `*.page
 - **`functions/api/auth.js` + `functions/api/callback.js`** — the GitHub OAuth flow. The
   admin opens a popup; the callback exchanges the code for a token (secret stays server-side)
   and hands it back via `postMessage`.
-- **[`src/scripts/admin-backends.js`](src/scripts/admin-backends.js)** — the `GitHubBackend`
-  reads and commits `content/*` files (and uploads images to `public/uploads/`) via the
-  GitHub Contents API. The `LocalBackend` is the localStorage demo used on localhost.
-- The admin UI is identical in both modes; it just picks the backend based on the hostname.
+- **[`src/scripts/admin-backends.js`](src/scripts/admin-backends.js)** — `GitHubBackend`
+  reads `content/*` via the Contents API, and **publishes a whole batch of changes as one
+  commit** via the Git Trees API. `LocalBackend` is the localStorage demo used on localhost.
+- The admin UI is identical in both modes; it picks the backend based on the hostname.
+
+### Publishing (GitHub mode) — batched to save build minutes
+
+On the live site the admin **stages** your edits instead of committing each one:
+
+1. Add/edit/delete products, change filters — nothing is committed yet. A **"N unpublished
+   changes"** bar appears at the bottom. Your draft is saved in the browser, so a refresh
+   won't lose it.
+2. Click **Publish changes** → everything (all products, images, settings) goes up in **one
+   commit** → one Cloudflare build → live in ~a minute.
+3. **Discard** throws away the draft and reloads from GitHub.
+
+This keeps you far under Cloudflare Pages' 500-builds/month free limit — a whole editing
+session is a single build, not one per click.
 
 ### Still to provide before going fully live
 

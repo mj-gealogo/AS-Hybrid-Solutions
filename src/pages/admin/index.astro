@@ -167,6 +167,18 @@ const seed = {
       <div id="login-error" style="font:400 13px Barlow;color:#c0392b;margin-top:14px;display:none"></div>
     </div>
   </div>
+
+  <!-- Publish bar — GitHub mode only, shown when there are unpublished changes. -->
+  <div id="publish-bar" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:150;background:#2d3a45;color:#fff;padding:13px 5vw;align-items:center;justify-content:space-between;gap:16px;box-shadow:0 -4px 16px rgba(0,0,0,.14)">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div id="publish-count" style="font:600 14px Barlow"></div>
+      <div id="publish-status" style="font:400 12px Barlow;color:#aeb8bf"></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex:none">
+      <button id="discard-btn" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:8px;padding:9px 16px;font:600 13px Barlow;cursor:pointer">Discard</button>
+      <button id="publish-btn" style="background:#FD843B;color:#fff;border:none;border-radius:8px;padding:10px 22px;font:600 14px Barlow;cursor:pointer">Publish changes</button>
+    </div>
+  </div>
 </Base>
 
 <script>
@@ -183,14 +195,44 @@ const seed = {
   let backend = null; // chosen in boot()
   let d = null;       // data, loaded via backend.init()
 
-  // Wrap every write so a failure surfaces instead of silently losing data.
+  // Wrap a network action so a failure surfaces instead of silently failing.
   async function commit(fn) {
-    try { await fn(); status(backend.statusOk); return true; }
+    try { await fn(); return true; }
     catch (e) { status('⚠ ' + (e && e.message ? e.message : e)); return false; }
   }
-  const saveSettings = () => commit(() => backend.putSettings(d.settings));
-  const saveCategories = () => commit(() => backend.putCategories(d.categories));
-  const saveConditions = () => commit(() => backend.putConditions(d.conditions));
+
+  // ---------- staged changes (GitHub mode) ----------
+  const STAGE_KEY = 'as_admin_staged';
+  let repoSlugs = new Set();       // slugs currently in the repo
+  let pending = newPending();      // what's changed but not yet published
+  function newPending() { return { products: new Set(), deletes: new Set(), settings: false, categories: false, conditions: false }; }
+  function pendingCount() {
+    return pending.products.size + pending.deletes.size +
+      (pending.settings ? 1 : 0) + (pending.categories ? 1 : 0) + (pending.conditions ? 1 : 0);
+  }
+  function persistStaging() {
+    try {
+      localStorage.setItem(STAGE_KEY, JSON.stringify({
+        d, pending: { products: [...pending.products], deletes: [...pending.deletes], settings: pending.settings, categories: pending.categories, conditions: pending.conditions },
+      }));
+    } catch { status('⚠ Draft too large to auto-save — publish soon so you don\'t lose changes.'); }
+  }
+  function clearStaging() { try { localStorage.removeItem(STAGE_KEY); } catch {} }
+
+  // Record a change. Local mode saves immediately; GitHub mode stages for Publish.
+  function touch(kind, slug) {
+    if (kind === 'settings') pending.settings = true;
+    else if (kind === 'categories') pending.categories = true;
+    else if (kind === 'conditions') pending.conditions = true;
+    else if (kind === 'product') { pending.products.add(slug); pending.deletes.delete(slug); }
+    else if (kind === 'delete') { if (repoSlugs.has(slug)) pending.deletes.add(slug); pending.products.delete(slug); }
+
+    if (backend.mode === 'local') { backend.save(d); status(backend.statusOk); pending = newPending(); }
+    else { persistStaging(); renderPublishBar(); }
+  }
+  const saveSettings = () => touch('settings');
+  const saveCategories = () => touch('categories');
+  const saveConditions = () => touch('conditions');
   let adminSearch = '';
   let adminPage = 1;
   const ADMIN_PER = 8;
@@ -321,15 +363,12 @@ const seed = {
   function renderAll() { renderChips(); renderHomeCats(); renderCondToggle(); renderTable(); }
 
   // ---------- product delete ----------
-  async function removeProduct(id) {
+  function removeProduct(id) {
     if (!window.confirm('Delete this product?')) return;
     const product = d.products.find((p) => p.id === id);
     if (!product) return;
-    // remove from the in-memory list first, then commit; roll back on failure.
-    const prev = d.products;
     d.products = d.products.filter((p) => p.id !== id);
-    const ok = await commit(() => backend.removeProduct(product));
-    if (!ok) { d.products = prev; }
+    touch('delete', product.slug);   // stage (GitHub) or save now (local)
     renderTable();
   }
 
@@ -481,18 +520,9 @@ const seed = {
       product = { id: 'p' + Date.now(), slug: slugify(form.name), name: form.name.trim(), category: form.category, condition: form.condition, sku: form.sku.trim() || '—', shortDesc: form.shortDesc || '', description: form.description || '', gallery, specs, compatibility };
     }
 
-    // Update the in-memory list first (so the local backend, which serialises the
-    // whole dataset, captures this change), then commit. Roll back if the commit fails.
-    const prev = d.products;
     if (editingId) d.products = d.products.map((p) => p.id === editingId ? product : p);
     else d.products = [product, ...d.products];
-
-    let toStore = product;
-    const ok = await commit(async () => { toStore = await backend.putProduct(product); });
-    if (!ok) { d.products = prev; renderTable(); return; }
-
-    // apply any uploaded image paths (GitHub mode) back into the in-memory product
-    if (toStore !== product) d.products = d.products.map((p) => p === product ? toStore : p);
+    touch('product', product.slug);   // stage (GitHub) or save now (local)
     closeModal();
     adminPage = 1; renderTable();
   }
@@ -584,9 +614,57 @@ const seed = {
       showLogin('Could not load content: ' + (e && e.message ? e.message : e));
       return;
     }
+    if (backend.mode === 'github') {
+      repoSlugs = new Set(d.products.map((p) => p.slug));
+      // resume any unpublished draft saved in this browser
+      let staged = null;
+      try { staged = JSON.parse(localStorage.getItem(STAGE_KEY)); } catch {}
+      if (staged && staged.d) {
+        d = staged.d;
+        pending = {
+          products: new Set(staged.pending.products), deletes: new Set(staged.pending.deletes),
+          settings: staged.pending.settings, categories: staged.pending.categories, conditions: staged.pending.conditions,
+        };
+      }
+    }
     $('login-gate').style.display = 'none';
     renderAll();
+    renderPublishBar();
   }
+
+  function renderPublishBar() {
+    const bar = $('publish-bar');
+    if (!backend || backend.mode !== 'github') { bar.style.display = 'none'; return; }
+    const n = pendingCount();
+    bar.style.display = n > 0 ? 'flex' : 'none';
+    if (n > 0) $('publish-count').textContent = `${n} unpublished change${n === 1 ? '' : 's'}`;
+  }
+
+  $('publish-btn').addEventListener('click', async () => {
+    const btn = $('publish-btn');
+    btn.disabled = true; btn.textContent = 'Publishing…';
+    $('publish-status').textContent = 'Committing to GitHub…';
+    const ok = await commit(async () => {
+      await backend.publish(d, pending);
+      clearStaging();
+      pending = newPending();
+      repoSlugs = new Set(d.products.map((p) => p.slug));
+      status(backend.statusOk);
+    });
+    btn.disabled = false; btn.textContent = 'Publish changes';
+    if (ok) { $('publish-status').textContent = ''; renderPublishBar(); }
+    else { $('publish-status').textContent = 'Publish failed — see the message above the table.'; }
+  });
+
+  $('discard-btn').addEventListener('click', async () => {
+    if (!window.confirm('Discard all unpublished changes and reload from GitHub?')) return;
+    clearStaging();
+    pending = newPending();
+    try { d = await backend.init(); } catch (e) { status('⚠ ' + (e && e.message ? e.message : e)); return; }
+    repoSlugs = new Set(d.products.map((p) => p.slug));
+    renderAll(); renderPublishBar();
+    status('Discarded unpublished changes.');
+  });
 
   function showLogin(errorMsg) {
     $('login-gate').style.display = 'flex';

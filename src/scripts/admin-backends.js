@@ -54,56 +54,53 @@ function b64ToUtf8(b64) {
 }
 
 // =================== LOCAL (demo) ===================
+// Saves the whole dataset to localStorage on every change (no publish step).
 export function createLocalBackend(seed) {
   const LS = 'as_admin_v1';
-  let data;
-  const save = () => { try { localStorage.setItem(LS, JSON.stringify(data)); } catch {} };
   return {
     mode: 'local',
     statusOk: 'Saved locally (demo). Online saving is active on the deployed site.',
     async init() {
       let saved = null;
       try { saved = JSON.parse(localStorage.getItem(LS)); } catch {}
-      data = saved && saved.products ? saved : JSON.parse(JSON.stringify(seed));
-      return data;
+      return saved && saved.products ? saved : JSON.parse(JSON.stringify(seed));
     },
-    async putProduct(p) { save(); return p; },
-    async removeProduct() { save(); },
-    async putSettings() { save(); },
-    async putCategories() { save(); },
-    async putConditions() { save(); },
+    save(d) { try { localStorage.setItem(LS, JSON.stringify(d)); } catch {} },
   };
 }
 
 // =================== GITHUB (production) ===================
+// Reads content via the Contents API; PUBLISHES a whole batch of staged changes
+// as a SINGLE commit via the Git Data (Trees) API — so N edits = 1 commit = 1 build.
 export function createGitHubBackend(token) {
   const { owner, repo, branch } = ADMIN_CONFIG;
-  const base = `https://api.github.com/repos/${owner}/${repo}/contents`;
+  const contents = `https://api.github.com/repos/${owner}/${repo}/contents`;
+  const git = `https://api.github.com/repos/${owner}/${repo}/git`;
   const headers = {
     Authorization: `token ${token}`,
     Accept: 'application/vnd.github+json',
     'Content-Type': 'application/json',
   };
-  const shas = {}; // path -> latest known blob sha
+  let repoSlugs = new Set(); // product slugs currently in the repo (for delete safety)
 
-  async function listDir(path) {
-    const r = await fetch(`${base}/${path}?ref=${branch}`, { headers });
-    if (r.status === 404) return [];
-    if (!r.ok) throw new Error(`GitHub ${r.status} listing ${path}`);
+  async function ghGet(url) {
+    const r = await fetch(url, { headers });
+    if (!r.ok) throw new Error(`GitHub ${r.status}: ${await r.text()}`);
     return r.json();
   }
-  async function readFile(path) {
-    const r = await fetch(`${base}/${path}?ref=${branch}`, { headers });
+  async function ghSend(method, url, body) {
+    const r = await fetch(url, { method, headers, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error(`GitHub ${r.status} ${method}: ${await r.text()}`);
+    return r.json();
+  }
+  async function readContent(path) {
+    const r = await fetch(`${contents}/${path}?ref=${branch}`, { headers });
     if (r.status === 404) return null;
     if (!r.ok) throw new Error(`GitHub ${r.status} reading ${path}`);
-    const j = await r.json();
-    shas[path] = j.sha;
-    return b64ToUtf8(j.content);
+    return b64ToUtf8((await r.json()).content);
   }
-  // Like readFile but fails loudly when the file is missing — so a wrong
-  // owner/repo surfaces a clear message instead of a silently-empty admin.
   async function readJson(path) {
-    const raw = await readFile(path);
+    const raw = await readContent(path);
     if (raw == null) {
       throw new Error(
         `Could not read ${path} from ${owner}/${repo}@${branch}. ` +
@@ -112,52 +109,27 @@ export function createGitHubBackend(token) {
     }
     return JSON.parse(raw);
   }
-  // contentB64 already base64 (binary) when isBinary; otherwise UTF-8 string.
-  async function writeFile(path, content, message, isBinary = false) {
-    const body = {
-      message, branch,
-      content: isBinary ? content : utf8ToB64(content),
-    };
-    if (shas[path]) body.sha = shas[path];
-    const r = await fetch(`${base}/${path}`, { method: 'PUT', headers, body: JSON.stringify(body) });
-    if (!r.ok) throw new Error(`GitHub ${r.status} writing ${path}: ${await r.text()}`);
-    const j = await r.json();
-    shas[path] = j.content.sha;
+  async function listDir(path) {
+    const r = await fetch(`${contents}/${path}?ref=${branch}`, { headers });
+    if (r.status === 404) return [];
+    if (!r.ok) throw new Error(`GitHub ${r.status} listing ${path}`);
+    return r.json();
   }
-  async function deleteFile(path, message) {
-    if (!shas[path]) { await readFile(path); if (!shas[path]) return; }
-    const body = JSON.stringify({ message, branch, sha: shas[path] });
-    const r = await fetch(`${base}/${path}`, { method: 'DELETE', headers, body });
-    if (!r.ok) throw new Error(`GitHub ${r.status} deleting ${path}`);
-    delete shas[path];
-  }
-
-  async function uploadInlineImages(p) {
-    const out = [];
-    for (let i = 0; i < (p.gallery || []).length; i++) {
-      const g = p.gallery[i];
-      const m = g && g.src && /^data:(image\/[\w+.-]+);base64,([\s\S]+)$/.exec(g.src);
-      if (m) {
-        const ext = m[1].split('/')[1].replace('jpeg', 'jpg').replace('svg+xml', 'svg');
-        const fname = `${p.slug}-${Date.now()}-${i}.${ext}`;
-        await writeFile(`public/uploads/${fname}`, m[2], `Upload image ${fname}`, true);
-        out.push({ src: `/uploads/${fname}`, label: g.label || '' });
-      } else {
-        out.push({ src: (g && g.src) || null, label: (g && g.label) || '' });
-      }
-    }
-    return out;
+  async function createBlob(content, encoding) {
+    return (await ghSend('POST', `${git}/blobs`, { content, encoding })).sha;
   }
 
   return {
     mode: 'github',
-    statusOk: 'Saved — committed to GitHub. The live site rebuilds in about a minute.',
+    statusOk: 'Published — committed to GitHub. The live site rebuilds in about a minute.',
+    get repoSlugs() { return repoSlugs; },
+
     async init() {
       const files = await listDir('content/products');
       const products = [];
       for (const f of files) {
         if (f.type !== 'file' || !f.name.endsWith('.md')) continue;
-        const raw = await readFile(f.path);
+        const raw = await readContent(f.path);
         const { data, body } = parseFrontmatter(raw);
         products.push({
           slug: f.name.replace(/\.md$/, ''),
@@ -170,25 +142,77 @@ export function createGitHubBackend(token) {
       const settings = await readJson('content/settings.json');
       const categories = await readJson('content/categories.json');
       const conditions = await readJson('content/conditions.json');
+      repoSlugs = new Set(products.map((p) => p.slug));
       return { products, categories, conditions, settings };
     },
-    async putProduct(p) {
-      const gallery = await uploadInlineImages(p);
-      const product = { ...p, gallery };
-      await writeFile(`content/products/${p.slug}.md`, serializeProduct(product), `Save product: ${p.name}`);
-      return product;
-    },
-    async removeProduct(p) {
-      await deleteFile(`content/products/${p.slug}.md`, `Delete product: ${p.name}`);
-    },
-    async putSettings(settings) {
-      await writeFile('content/settings.json', JSON.stringify(settings, null, 2) + '\n', 'Update catalog settings');
-    },
-    async putCategories(categories) {
-      await writeFile('content/categories.json', JSON.stringify(categories) + '\n', 'Update categories');
-    },
-    async putConditions(conditions) {
-      await writeFile('content/conditions.json', JSON.stringify(conditions) + '\n', 'Update conditions');
+
+    // Bundle every staged change into ONE commit. Returns the number of changes.
+    // `pending` = { products:Set<slug>, deletes:Set<slug>, settings, categories, conditions }
+    async publish(d, pending) {
+      const ref = await ghGet(`${git}/ref/heads/${branch}`);
+      const headSha = ref.object.sha;
+      const headCommit = await ghGet(`${git}/commits/${headSha}`);
+      const baseTree = headCommit.tree.sha;
+
+      const tree = [];
+
+      // Upserted products (+ upload any inline images into the same commit)
+      for (const slug of pending.products) {
+        const p = d.products.find((x) => x.slug === slug);
+        if (!p) continue;
+        const gallery = [];
+        for (let i = 0; i < (p.gallery || []).length; i++) {
+          const g = p.gallery[i];
+          const m = g && g.src && /^data:(image\/[\w+.-]+);base64,([\s\S]+)$/.exec(g.src);
+          if (m) {
+            const ext = m[1].split('/')[1].replace('jpeg', 'jpg').replace('svg+xml', 'svg');
+            const fname = `${slug}-${Date.now()}-${i}.${ext}`;
+            const sha = await createBlob(m[2], 'base64');
+            tree.push({ path: `public/uploads/${fname}`, mode: '100644', type: 'blob', sha });
+            gallery.push({ src: `/uploads/${fname}`, label: g.label || '' });
+          } else {
+            gallery.push({ src: (g && g.src) || null, label: (g && g.label) || '' });
+          }
+        }
+        const sha = await createBlob(utf8ToB64(serializeProduct({ ...p, gallery })), 'base64');
+        tree.push({ path: `content/products/${slug}.md`, mode: '100644', type: 'blob', sha });
+      }
+
+      // Deletions — only for products that actually exist in the repo
+      let deleteCount = 0;
+      for (const slug of pending.deletes) {
+        if (!repoSlugs.has(slug)) continue;
+        tree.push({ path: `content/products/${slug}.md`, mode: '100644', type: 'blob', sha: null });
+        deleteCount++;
+      }
+
+      if (pending.settings) {
+        const sha = await createBlob(utf8ToB64(JSON.stringify(d.settings, null, 2) + '\n'), 'base64');
+        tree.push({ path: 'content/settings.json', mode: '100644', type: 'blob', sha });
+      }
+      if (pending.categories) {
+        const sha = await createBlob(utf8ToB64(JSON.stringify(d.categories) + '\n'), 'base64');
+        tree.push({ path: 'content/categories.json', mode: '100644', type: 'blob', sha });
+      }
+      if (pending.conditions) {
+        const sha = await createBlob(utf8ToB64(JSON.stringify(d.conditions) + '\n'), 'base64');
+        tree.push({ path: 'content/conditions.json', mode: '100644', type: 'blob', sha });
+      }
+
+      const changeCount = pending.products.size + deleteCount +
+        (pending.settings ? 1 : 0) + (pending.categories ? 1 : 0) + (pending.conditions ? 1 : 0);
+      if (tree.length === 0) return 0;
+
+      const newTree = await ghSend('POST', `${git}/trees`, { base_tree: baseTree, tree });
+      const commit = await ghSend('POST', `${git}/commits`, {
+        message: `Admin: publish ${changeCount} change(s)`,
+        tree: newTree.sha,
+        parents: [headSha],
+      });
+      await ghSend('PATCH', `${git}/refs/heads/${branch}`, { sha: commit.sha });
+
+      repoSlugs = new Set(d.products.map((p) => p.slug));
+      return changeCount;
     },
   };
 }
