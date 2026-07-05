@@ -154,37 +154,43 @@ const seed = {
       </div>
     </div>
   </div>
+
+  <!-- Real content baked in at build time — used by local/demo mode. -->
+  <script type="application/json" id="admin-seed" set:html={JSON.stringify(seed)} is:inline></script>
+
+  <!-- Login gate — shown only on the deployed site until the owner signs in. -->
+  <div id="login-gate" style="display:none;position:fixed;inset:0;z-index:200;background:#f7f9fa;align-items:center;justify-content:center;padding:24px">
+    <div style="background:#fff;border:1px solid #eef1f3;border-radius:16px;padding:36px;max-width:400px;width:100%;text-align:center;box-shadow:0 8px 24px rgba(55,71,84,.08)">
+      <div style="font:800 24px Archivo;color:#374754;letter-spacing:-.01em">Product manager</div>
+      <div style="font:400 14px/1.6 Barlow;color:#6b7780;margin:10px 0 24px">Sign in with the shop's GitHub account to add or edit products.</div>
+      <button id="login-btn" style="background:#374754;color:#fff;border:none;border-radius:9px;padding:13px 22px;font:600 15px Barlow;cursor:pointer;width:100%">Log in with GitHub</button>
+      <div id="login-error" style="font:400 13px Barlow;color:#c0392b;margin-top:14px;display:none"></div>
+    </div>
+  </div>
 </Base>
 
-<script define:vars={{ seed }}>
-  // ---------- data store (local/demo mode via localStorage) ----------
-  // Structured so a GitHub-commit store can be swapped in for production.
-  const LS = 'as_admin_v1';
-  const slugify = (s) => (s || '').toString().toLowerCase().trim()
-    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'product-' + Date.now();
+<script>
+  import { createLocalBackend, createGitHubBackend, slugify } from '../../scripts/admin-backends.js';
 
-  const store = {
-    data: null,
-    load() {
-      let saved = null;
-      try { saved = JSON.parse(localStorage.getItem(LS)); } catch {}
-      this.data = saved && saved.products ? saved : JSON.parse(JSON.stringify({
-        products: seed.products, categories: seed.categories,
-        conditions: seed.conditions, settings: seed.settings,
-      }));
-      return this.data;
-    },
-    async persist() {
-      // LOCAL mode: save to browser. PRODUCT mode (added on deploy): commit to
-      // GitHub so the change rebuilds the live site. See README deploy section.
-      try { localStorage.setItem(LS, JSON.stringify(this.data)); } catch {}
-      status('Saved locally (demo). Online saving is added when the site is deployed.');
-    },
-    reset() { try { localStorage.removeItem(LS); } catch {} this.load(); },
-  };
+  // Real content baked in at build time — used by local/demo mode.
+  const seed = JSON.parse(document.getElementById('admin-seed').textContent);
 
-  // ---------- state ----------
-  let d = store.load();
+  // localhost → demo mode (localStorage). Deployed → GitHub mode (needs login).
+  const IS_LOCAL = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+  const TOKEN_KEY = 'as_admin_token';
+
+  // ---------- backend + state ----------
+  let backend = null; // chosen in boot()
+  let d = null;       // data, loaded via backend.init()
+
+  // Wrap every write so a failure surfaces instead of silently losing data.
+  async function commit(fn) {
+    try { await fn(); status(backend.statusOk); return true; }
+    catch (e) { status('⚠ ' + (e && e.message ? e.message : e)); return false; }
+  }
+  const saveSettings = () => commit(() => backend.putSettings(d.settings));
+  const saveCategories = () => commit(() => backend.putCategories(d.categories));
+  const saveConditions = () => commit(() => backend.putConditions(d.conditions));
   let adminSearch = '';
   let adminPage = 1;
   const ADMIN_PER = 8;
@@ -222,7 +228,7 @@ const seed = {
     }
     wrap.querySelectorAll('[data-remove-chip]').forEach((b) => b.addEventListener('click', async () => {
       d.settings.chipCats = (d.settings.chipCats || []).filter((x) => x !== b.getAttribute('data-remove-chip'));
-      await store.persist(); renderChips();
+      await saveSettings(); renderChips();
     }));
     // dropdown of not-yet-chosen cats
     const opts = allCats().filter((c) => !(d.settings.chipCats || []).includes(c));
@@ -241,7 +247,7 @@ const seed = {
     }
     wrap.querySelectorAll('[data-remove-home]').forEach((b) => b.addEventListener('click', async () => {
       d.settings.homeCats = (d.settings.homeCats || []).filter((x) => x !== b.getAttribute('data-remove-home'));
-      await store.persist(); renderHomeCats();
+      await saveSettings(); renderHomeCats();
     }));
     const opts = allCats().filter((c) => !(d.settings.homeCats || []).includes(c));
     $('home-add').innerHTML = `<option value="">+ Add a category to the home panel…</option>` + opts.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
@@ -266,7 +272,7 @@ const seed = {
     adminPage = Math.min(adminPage, totalPages);
     const rows = filtered.slice((adminPage - 1) * ADMIN_PER, adminPage * ADMIN_PER);
 
-    $('admin-subtitle').textContent = `${d.products.length} product${d.products.length === 1 ? '' : 's'} · changes save locally in this demo`;
+    $('admin-subtitle').textContent = `${d.products.length} product${d.products.length === 1 ? '' : 's'} · ${backend.mode === 'github' ? 'changes publish to the live site' : 'changes save locally in this demo'}`;
 
     const container = $('admin-rows');
     if (filtered.length === 0) {
@@ -317,8 +323,14 @@ const seed = {
   // ---------- product delete ----------
   async function removeProduct(id) {
     if (!window.confirm('Delete this product?')) return;
+    const product = d.products.find((p) => p.id === id);
+    if (!product) return;
+    // remove from the in-memory list first, then commit; roll back on failure.
+    const prev = d.products;
     d.products = d.products.filter((p) => p.id !== id);
-    await store.persist(); renderTable();
+    const ok = await commit(() => backend.removeProduct(product));
+    if (!ok) { d.products = prev; }
+    renderTable();
   }
 
   // ---------- modal ----------
@@ -461,15 +473,26 @@ const seed = {
     const specs = form.specs.filter((s) => (s.label || '').trim() || (s.value || '').trim()).map((s) => ({ label: s.label.trim(), value: s.value.trim() }));
     const compatibility = form.compatibility.map((c) => c.trim()).filter(Boolean);
 
+    let product;
     if (editingId) {
-      d.products = d.products.map((p) => p.id === editingId
-        ? { ...p, name: form.name.trim(), category: form.category, condition: form.condition, sku: form.sku.trim(), shortDesc: form.shortDesc, description: form.description, gallery, specs, compatibility }
-        : p);
+      const existing = d.products.find((p) => p.id === editingId);
+      product = { ...existing, name: form.name.trim(), category: form.category, condition: form.condition, sku: form.sku.trim(), shortDesc: form.shortDesc, description: form.description, gallery, specs, compatibility };
     } else {
-      const id = 'p' + Date.now();
-      d.products.unshift({ id, slug: slugify(form.name), name: form.name.trim(), category: form.category, condition: form.condition, sku: form.sku.trim() || '—', shortDesc: form.shortDesc || '', description: form.description || '', gallery, specs, compatibility });
+      product = { id: 'p' + Date.now(), slug: slugify(form.name), name: form.name.trim(), category: form.category, condition: form.condition, sku: form.sku.trim() || '—', shortDesc: form.shortDesc || '', description: form.description || '', gallery, specs, compatibility };
     }
-    await store.persist();
+
+    // Update the in-memory list first (so the local backend, which serialises the
+    // whole dataset, captures this change), then commit. Roll back if the commit fails.
+    const prev = d.products;
+    if (editingId) d.products = d.products.map((p) => p.id === editingId ? product : p);
+    else d.products = [product, ...d.products];
+
+    let toStore = product;
+    const ok = await commit(async () => { toStore = await backend.putProduct(product); });
+    if (!ok) { d.products = prev; renderTable(); return; }
+
+    // apply any uploaded image paths (GitHub mode) back into the in-memory product
+    if (toStore !== product) d.products = d.products.map((p) => p === product ? toStore : p);
     closeModal();
     adminPage = 1; renderTable();
   }
@@ -488,9 +511,8 @@ const seed = {
     }).join('');
     list.querySelectorAll('[data-rm-val]').forEach((b) => b.addEventListener('click', async () => {
       const v = b.getAttribute('data-rm-val');
-      if (kind === 'cat') d.categories = d.categories.filter((x) => x !== v);
-      else d.conditions = d.conditions.filter((x) => x !== v);
-      await store.persist();
+      if (kind === 'cat') { d.categories = d.categories.filter((x) => x !== v); await saveCategories(); }
+      else { d.conditions = d.conditions.filter((x) => x !== v); await saveConditions(); }
       renderManageList(kind);
       fillSelect(kind === 'cat' ? 'f-category' : 'f-condition', kind === 'cat' ? allCats() : allConds(), kind === 'cat' ? form.category : form.condition);
       renderChips(); renderHomeCats();
@@ -506,15 +528,15 @@ const seed = {
 
   $('chip-add').addEventListener('change', async (e) => {
     const v = e.target.value; e.target.value = '';
-    if (v && !(d.settings.chipCats || []).includes(v)) { d.settings.chipCats = [...(d.settings.chipCats || []), v]; await store.persist(); renderChips(); }
+    if (v && !(d.settings.chipCats || []).includes(v)) { d.settings.chipCats = [...(d.settings.chipCats || []), v]; await saveSettings(); renderChips(); }
   });
   $('home-add').addEventListener('change', async (e) => {
     const v = e.target.value; e.target.value = '';
-    if (v && !(d.settings.homeCats || []).includes(v)) { d.settings.homeCats = [...(d.settings.homeCats || []), v]; await store.persist(); renderHomeCats(); }
+    if (v && !(d.settings.homeCats || []).includes(v)) { d.settings.homeCats = [...(d.settings.homeCats || []), v]; await saveSettings(); renderHomeCats(); }
   });
   $('cond-toggle').addEventListener('click', async () => {
     d.settings.conditionFilter = d.settings.conditionFilter === false ? true : false;
-    await store.persist(); renderCondToggle();
+    await saveSettings(); renderCondToggle();
   });
 
   let searchTimer;
@@ -537,14 +559,14 @@ const seed = {
   $('cat-add').addEventListener('click', async () => {
     const n = $('cat-new').value.trim(); if (!n) return;
     if (!d.categories.some((c) => c.toLowerCase() === n.toLowerCase())) d.categories.push(n);
-    $('cat-new').value = ''; await store.persist();
+    $('cat-new').value = ''; await saveCategories();
     fillSelect('f-category', allCats(), n); form.category = n;
     renderManageList('cat'); renderChips(); renderHomeCats();
   });
   $('cond-add').addEventListener('click', async () => {
     const n = $('cond-new').value.trim(); if (!n) return;
     if (!d.conditions.some((c) => c.toLowerCase() === n.toLowerCase())) d.conditions.push(n);
-    $('cond-new').value = ''; await store.persist();
+    $('cond-new').value = ''; await saveConditions();
     fillSelect('f-condition', allConds(), n); form.condition = n;
     renderManageList('cond');
   });
@@ -553,5 +575,55 @@ const seed = {
   $('f-category').addEventListener('change', (e) => { if (form) form.category = e.target.value; });
   $('f-condition').addEventListener('change', (e) => { if (form) form.condition = e.target.value; });
 
-  renderAll();
+  // ---------- boot: choose backend, (log in), load data, render ----------
+  async function startWith(chosenBackend) {
+    backend = chosenBackend;
+    try {
+      d = await backend.init();
+    } catch (e) {
+      showLogin('Could not load content: ' + (e && e.message ? e.message : e));
+      return;
+    }
+    $('login-gate').style.display = 'none';
+    renderAll();
+  }
+
+  function showLogin(errorMsg) {
+    $('login-gate').style.display = 'flex';
+    const errEl = $('login-error');
+    if (errorMsg) { errEl.textContent = errorMsg; errEl.style.display = 'block'; }
+    else { errEl.style.display = 'none'; }
+  }
+
+  function openLoginPopup() {
+    const w = 620, h = 720;
+    const left = window.screenX + (window.outerWidth - w) / 2;
+    const top = window.screenY + (window.outerHeight - h) / 2;
+    window.open('/api/auth', 'github-oauth', `width=${w},height=${h},left=${left},top=${top}`);
+  }
+
+  window.addEventListener('message', (e) => {
+    if (e.origin !== window.location.origin) return;
+    const msg = e.data;
+    if (!msg || msg.source !== 'as-admin-oauth') return;
+    if (msg.token) {
+      try { sessionStorage.setItem(TOKEN_KEY, msg.token); } catch {}
+      startWith(createGitHubBackend(msg.token));
+    } else {
+      showLogin(msg.error || 'Sign-in failed.');
+    }
+  });
+
+  $('login-btn').addEventListener('click', openLoginPopup);
+
+  if (IS_LOCAL) {
+    // Demo mode — no login, edits persist to this browser.
+    startWith(createLocalBackend(seed));
+  } else {
+    // Production — GitHub mode. Resume an existing session or show the login gate.
+    let token = null;
+    try { token = sessionStorage.getItem(TOKEN_KEY); } catch {}
+    if (token) startWith(createGitHubBackend(token));
+    else showLogin();
+  }
 </script>

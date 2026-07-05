@@ -106,13 +106,20 @@ render in the order listed):
 src/
 ├── layouts/Base.astro         # <html> shell, global styles, fonts, responsive helpers
 ├── components/                # Nav, Footer, ProductCard
-├── lib/content.ts             # reads + parses content/ files at build time
+├── lib/
+│   ├── content.ts             # reads + parses content/ files at build time
+│   └── admin-config.js        # owner/repo/branch for the admin's GitHub mode
+├── scripts/
+│   └── admin-backends.js      # Local (demo) + GitHub (commit) data stores for the admin
 └── pages/
     ├── index.astro            # Home
     ├── catalog/index.astro    # Catalog (search + filters + pager)
     ├── catalog/[slug].astro   # Product detail (one static page per product)
     ├── contact.astro          # Enquiry form
     └── admin/index.astro      # Custom "Product manager" admin (served at /admin/)
+functions/api/
+├── auth.js                    # Cloudflare Function — starts GitHub OAuth login
+└── callback.js                # Cloudflare Function — completes login, returns token
 public/
 ├── _headers                   # Cloudflare security headers (CSP, etc.)
 └── uploads/                   # product images
@@ -133,20 +140,48 @@ public/
 
 ## Deploying to Cloudflare Pages
 
-The site builds today; deployment is wired up but needs a few real values filled in.
+All the code is in place (including the admin's online-saving layer). You just fill in
+real values. Do these in order — each step produces something the next one needs.
 
-1. **Put this project folder in its own GitHub repo** and push it.
-2. **Cloudflare Pages** → Create project → connect the GitHub repo. Build command
-   `npm run build`, output directory `dist`. It redeploys on every push. You'll get a free
-   `*.pages.dev` URL (no custom domain needed).
-3. **Wire the admin's online saving** (so `/admin/` can commit to the content files):
-   - **GitHub OAuth App** (GitHub → Settings → Developer settings → OAuth Apps) so the owner
-     can log in. Callback URL = your `.pages.dev` domain. Gives a Client ID + Secret.
-   - A **Cloudflare Pages Function** at `functions/api/auth.js` to complete the GitHub login
-     (keeps the client secret server-side), plus the admin's GitHub data-store that commits
-     product/settings changes via the GitHub Contents API.
-   - This is the "online mode" described under **The admin** above — it's the remaining piece
-     to build once the repo + Pages project exist (it can't be tested until then).
+**1. Push to GitHub.** Create a repo and push this project folder.
+
+**2. Cloudflare Pages.** Create project → connect the repo. Build command `npm run build`,
+output directory `dist`. It redeploys on every push and gives you a free `*.pages.dev` URL
+(no custom domain needed). Note that URL — you need it in step 3.
+
+**3. GitHub OAuth App.** GitHub → Settings → Developer settings → **OAuth Apps** → New:
+   - **Homepage URL:** your `https://<project>.pages.dev`
+   - **Authorization callback URL:** `https://<project>.pages.dev/api/callback`
+   - Save. Copy the **Client ID**, then **Generate a new client secret** and copy that too.
+
+**4. Add the secrets to Cloudflare Pages** (Settings → Environment variables → Production):
+   - `GITHUB_OAUTH_CLIENT_ID` = the Client ID
+   - `GITHUB_OAUTH_CLIENT_SECRET` = the Client Secret
+   These stay server-side (used only by `functions/api/callback.js`); never commit them.
+
+**5. Set your repo in code.** Edit [`src/lib/admin-config.js`](src/lib/admin-config.js) —
+   set `owner` and `repo` to your GitHub username + repo name. Commit and push (triggers a
+   rebuild).
+
+**6. Done.** Open `https://<project>.pages.dev/admin/`, click **Log in with GitHub**, and
+   edits will commit to your content files → the site rebuilds within ~a minute.
+
+**Notes:**
+- The OAuth scope is `public_repo` (safe, works for a **public** repo). If your repo is
+  **private**, change `scope` to `repo` in [`functions/api/auth.js`](functions/api/auth.js).
+- Only GitHub accounts with **write access** to the repo can save — that's your admin gate.
+- Locally (`npm run dev`) the admin stays in demo mode (localStorage); GitHub mode only
+  activates on the deployed domain.
+
+### How the admin's online saving works (already built)
+
+- **`functions/api/auth.js` + `functions/api/callback.js`** — the GitHub OAuth flow. The
+  admin opens a popup; the callback exchanges the code for a token (secret stays server-side)
+  and hands it back via `postMessage`.
+- **[`src/scripts/admin-backends.js`](src/scripts/admin-backends.js)** — the `GitHubBackend`
+  reads and commits `content/*` files (and uploads images to `public/uploads/`) via the
+  GitHub Contents API. The `LocalBackend` is the localStorage demo used on localhost.
+- The admin UI is identical in both modes; it just picks the backend based on the hostname.
 
 ### Still to provide before going fully live
 
